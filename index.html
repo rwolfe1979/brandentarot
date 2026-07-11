@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Branden Tarot — Walk the Path</title>
+<meta name="description" content="Los Angeles spiritual counselor and tarot reader with 30+ years of experience. Book an intuitive reading in person or remote." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --night:#070c0a;
+    --forest:#0c1512;
+    --forest-2:#0f1d18;
+    --moss:#1c2f26;
+    --fern:#2f5140;
+    --mist:#8aa79a;
+    --parchment:#e8e3d3;
+    --amber:#f4c66a;
+    --amber-glow:#ffd98a;
+    --lavender:#c8a8ff;
+    --wisp:#8fe3d6;
+    --gold:#e9b949;
+    --shadow:0 20px 60px rgba(0,0,0,.55);
+    --serif:"Cormorant Garamond", serif;
+    --body:"EB Garamond", serif;
+    --display:"Cinzel Decorative", serif;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:var(--body);
+    color:var(--parchment);
+    background:var(--night);
+    line-height:1.7;
+    overflow-x:hidden;
+  }
+
+  /* drifting spores / firefly canvas — floats above section backgrounds, below nav */
+  #spores{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;}
+
+  /* fixed atmospheric forest backdrop (misty trees, canopy, path glow) */
+  .forest-bg{position:fixed;inset:0;z-index:0;background:#070c0a url('assets/forest-bg.jpg') center bottom/cover no-repeat;}
+  .forest-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,12,10,.25),rgba(7,12,10,.05) 40%,rgba(7,12,10,.35));}
+
+  /* ===== FOREST FRAME (trunks, foliage, vines) ===== */
+  .forest-frame{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden;}
+  .trunk{position:absolute;top:-40px;bottom:-40px;width:170px;opacity:.9;}
+  .trunk svg{width:100%;height:100%;}
+  .trunk-left{left:-26px;}
+  .trunk-right{right:-26px;transform:scaleX(-1);}
+  .corner{position:absolute;bottom:-10px;width:340px;height:320px;opacity:.95;}
+  .corner-left{left:-14px;}
+  .corner-right{right:-14px;transform:scaleX(-1);}
+  .canopy{position:absolute;top:-8px;width:300px;height:260px;opacity:.9;}
+  .canopy-left{left:-10px;}
+  .canopy-right{right:-10px;transform:scaleX(-1);}
+  /* fern images (public-domain clipart, flipped/reoriented) */
+  .fern{position:absolute;bottom:-24px;pointer-events:none;z-index:1;}
+  .fern img{width:100%;display:block;transform-origin:bottom center;
+    filter:brightness(.62) saturate(1.2) drop-shadow(0 6px 12px rgba(0,0,0,.5));
+    animation:sway 9s ease-in-out infinite;}
+  .fern.flip img{transform:scaleX(-1);}
+  @keyframes sway{0%,100%{transform:rotate(-2.2deg);}50%{transform:rotate(2.2deg);}}
+  .fern.flip{ }
+  .fern-l1{left:-46px;width:280px;}
+  .fern-l2{left:96px;width:170px;bottom:-14px;}
+  .fern-r1{right:-46px;width:280px;}
+  .fern-r2{right:96px;width:170px;bottom:-14px;}
+  /* vintage mushrooms growing up from the bottom corners (fixed, follow scroll) */
+  .grow-shroom{position:absolute;bottom:-4px;z-index:2;pointer-events:none;transform-origin:bottom center;
+    filter:drop-shadow(0 8px 16px rgba(0,0,0,.55));
+    animation:sprout 1.8s cubic-bezier(.2,.85,.25,1) both;}
+  @keyframes sprout{0%{transform:scaleY(.02) scaleX(.72);opacity:0;}55%{opacity:1;}100%{transform:scaleY(1) scaleX(1);opacity:1;}}
+  @media(max-width:900px){.grow-shroom{transform:scale(.75);opacity:.85;}}
+  @media(max-width:560px){.grow-shroom{display:none;}}
+  @media(max-width:820px){.fern-l1,.fern-r1{width:190px;}.fern-l2,.fern-r2{display:none;}}
+  @media(max-width:560px){.fern{display:none;}}
+  @media(max-width:1180px){.trunk{display:none;}}
+  @media(max-width:820px){.corner{width:210px;height:210px;opacity:.9;}.canopy{width:180px;height:150px;}}
+  @media(max-width:560px){.corner,.canopy{display:none;}}
+
+  /* ===== NAV ===== */
+  header.nav{
+    position:fixed;top:0;left:0;right:0;z-index:20;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px;
+    background:linear-gradient(to bottom, rgba(7,12,10,.92), rgba(7,12,10,0));
+    backdrop-filter:blur(4px);
+    transition:background .3s ease;
+  }
+  header.nav.scrolled{background:rgba(7,12,10,.92);border-bottom:1px solid rgba(244,198,106,.15);}
+  .brand{font-family:var(--display);font-size:1.15rem;letter-spacing:.06em;color:var(--amber-glow);text-decoration:none;text-shadow:0 0 18px rgba(244,198,106,.4);}
+  nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0;}
+  nav a{color:var(--mist);text-decoration:none;font-size:1.02rem;letter-spacing:.04em;transition:color .25s, text-shadow .25s;}
+  nav a:hover{color:var(--amber-glow);text-shadow:0 0 12px rgba(244,198,106,.6);}
+  .nav-toggle{display:none;background:none;border:none;color:var(--amber-glow);font-size:1.6rem;cursor:pointer;}
+
+  /* ===== BUTTONS ===== */
+  .btn{
+    display:inline-block;font-family:var(--serif);font-size:1.05rem;letter-spacing:.05em;
+    padding:14px 30px;border-radius:40px;text-decoration:none;cursor:pointer;border:1px solid transparent;
+    transition:transform .25s, box-shadow .25s, background .25s;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,#f4c66a,#e9a13d);color:#2a1a05;font-weight:600;
+    box-shadow:0 0 22px rgba(244,198,106,.35), inset 0 0 12px rgba(255,255,255,.25);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 38px rgba(244,198,106,.7);}
+  .btn-ghost{border:1px solid rgba(200,168,255,.45);color:var(--lavender);background:rgba(200,168,255,.05);}
+  .btn-ghost:hover{transform:translateY(-2px);box-shadow:0 0 26px rgba(200,168,255,.35);color:#e6d6ff;}
+
+  /* ===== LAYOUT ===== */
+  section{position:relative;z-index:2;padding:110px 24px;}
+  .wrap{max-width:1080px;margin:0 auto;position:relative;z-index:3;}
+  .kicker{font-family:var(--serif);text-transform:uppercase;letter-spacing:.32em;font-size:.8rem;color:var(--wisp);margin-bottom:18px;}
+  h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.2;margin:0 0 .4em;}
+  h2{font-size:clamp(2rem,5vw,3rem);color:var(--amber-glow);text-shadow:0 0 26px rgba(244,198,106,.25);text-align:center;}
+  .lead{font-family:var(--serif);font-size:1.3rem;color:var(--mist);max-width:640px;margin:0 auto 40px;text-align:center;}
+
+  /* ===== HERO ===== */
+  .hero{
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:120px 24px 80px;overflow:hidden;
+    background:
+      radial-gradient(ellipse at 50% 8%, rgba(244,198,106,.10), transparent 45%),
+      linear-gradient(180deg, rgba(10,19,16,.15) 0%, rgba(9,15,12,.42) 55%, rgba(7,12,10,.72) 100%);
+  }
+  .moon{
+    position:absolute;top:8vh;left:50%;transform:translateX(-50%);
+    width:280px;height:280px;z-index:0;display:flex;align-items:center;justify-content:center;
+  }
+  .moon .halo{
+    position:absolute;inset:-38%;border-radius:50%;
+    background:radial-gradient(circle, rgba(248,236,190,.5) 0%, rgba(244,198,106,.22) 42%, rgba(244,198,106,.05) 62%, transparent 74%);
+    filter:blur(6px);
+    animation:moonpulse 7s ease-in-out infinite;
+  }
+  .moon img{
+    position:relative;width:100%;height:100%;object-fit:contain;
+    /* warm gold tint on the cool-gray moon + glow + cast shadow */
+    filter:
+      sepia(.5) saturate(1.9) hue-rotate(-12deg) brightness(1.06) contrast(1.03)
+      drop-shadow(0 0 22px rgba(244,198,106,.5))
+      drop-shadow(0 12px 26px rgba(0,0,0,.55));
+  }
+  @keyframes moonpulse{0%,100%{opacity:.85;}50%{opacity:1;}}
+  .hero-content{position:relative;z-index:3;}
+  .hero h1{font-size:clamp(2.6rem,8vw,5.4rem);color:#fff;letter-spacing:.04em;text-shadow:0 0 40px rgba(244,198,106,.45);}
+  .hero .sub{font-family:var(--serif);font-size:clamp(1.15rem,2.6vw,1.5rem);color:var(--parchment);max-width:620px;margin:10px auto 8px;}
+  .hero .whisper{font-family:var(--serif);font-style:italic;color:var(--mist);margin-bottom:38px;}
+  .hero-cta{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+  .scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);color:var(--mist);font-size:.85rem;letter-spacing:.25em;text-transform:uppercase;z-index:3;animation:bob 2.4s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translate(-50%,0);opacity:.6;}50%{transform:translate(-50%,8px);opacity:1;}}
+
+  /* tree line silhouette */
+  .treeline{position:absolute;left:0;right:0;bottom:-2px;height:200px;z-index:2;pointer-events:none;}
+
+  /* ===== ABOUT ===== */
+  .about{background:rgba(9,15,12,.72);}
+  .about-grid{display:grid;grid-template-columns:0.85fr 1.15fr;gap:56px;align-items:center;}
+  .portrait{
+    aspect-ratio:4/5;border-radius:14px;position:relative;overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(244,198,106,.18), transparent 60%),
+      linear-gradient(160deg,#12241d,#0a1410);
+    border:1px solid rgba(244,198,106,.2);box-shadow:var(--shadow);
+    display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mist);
+    font-family:var(--serif);font-style:italic;padding:24px;
+  }
+  .portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;}
+  .portrait::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,12,10,0) 55%,rgba(7,12,10,.55));pointer-events:none;}
+  .portrait .frameglow{position:absolute;inset:0;box-shadow:inset 0 0 40px rgba(244,198,106,.25);border-radius:14px;pointer-events:none;z-index:2;}
+  .about p{font-size:1.12rem;color:#d8d2c0;}
+  .about h2{text-align:left;}
+  .creds{display:flex;gap:26px;margin-top:26px;flex-wrap:wrap;}
+  .cred{border-left:2px solid var(--amber);padding-left:14px;}
+  .cred b{display:block;font-family:var(--display);font-size:1.5rem;color:var(--amber-glow);}
+  .cred span{font-family:var(--serif);color:var(--mist);font-size:.95rem;}
+
+  /* ===== READINGS ===== */
+  .readings{background:radial-gradient(ellipse at 80% 0%, rgba(200,168,255,.10), transparent 45%),rgba(9,15,12,.70);}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:26px;margin-top:20px;}
+  .card{
+    background:linear-gradient(180deg, rgba(28,47,38,.65), rgba(12,21,18,.85));
+    border:1px solid rgba(244,198,106,.18);border-radius:16px;padding:32px 26px;
+    position:relative;transition:transform .3s, box-shadow .3s, border-color .3s;overflow:hidden;
+  }
+  .card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0%, rgba(244,198,106,.16), transparent 60%);opacity:0;transition:opacity .3s;}
+  .card:hover{transform:translateY(-6px);border-color:rgba(244,198,106,.5);box-shadow:0 18px 44px rgba(0,0,0,.5);}
+  .card:hover::before{opacity:1;}
+  .card .sym{font-size:1.8rem;margin-bottom:12px;}
+  .card h3{color:var(--amber-glow);font-size:1.35rem;}
+  .card .price{font-family:var(--display);font-size:1.7rem;color:#fff;margin:10px 0 14px;}
+  .card p{color:var(--mist);font-size:1rem;min-height:66px;}
+  .card .pick{color:var(--wisp);text-decoration:none;font-family:var(--serif);letter-spacing:.05em;border-bottom:1px solid transparent;transition:border-color .25s;}
+  .card:hover .pick{border-color:var(--wisp);}
+  .featured{border-color:rgba(233,185,73,.6);}
+  .tag{position:absolute;top:16px;right:16px;background:var(--amber);color:#2a1a05;font-family:var(--serif);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;}
+
+  /* ===== POTIONS ===== */
+  .potions{background:rgba(9,17,13,.72);}
+  .potion-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:20px;}
+  .potion{background:rgba(15,29,24,.6);border:1px solid rgba(143,227,214,.15);border-radius:14px;padding:28px;transition:border-color .3s, transform .3s;}
+  .potion:hover{border-color:rgba(143,227,214,.45);transform:translateY(-4px);}
+  .potion h3{color:var(--wisp);font-size:1.25rem;}
+  .potion .price{font-family:var(--display);color:#fff;font-size:1.3rem;margin:8px 0;}
+  .potion p{color:var(--mist);font-size:.98rem;}
+
+  /* ===== WATCH ===== */
+  .watch{background:radial-gradient(ellipse at 50% 120%, rgba(200,168,255,.16), transparent 55%),rgba(8,13,11,.72);text-align:center;}
+  .video-frame{max-width:820px;margin:16px auto 30px;aspect-ratio:16/9;border-radius:16px;overflow:hidden;border:1px solid rgba(200,168,255,.3);box-shadow:0 0 50px rgba(200,168,255,.18);}
+  .video-frame iframe{width:100%;height:100%;border:0;}
+
+  /* ===== TESTIMONIALS ===== */
+  .testi{background:rgba(9,15,12,.72);}
+  .quotes{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:24px;}
+  .quote{background:rgba(28,47,38,.4);border-radius:16px;padding:34px;position:relative;border:1px solid rgba(244,198,106,.12);}
+  .quote::before{content:"\201C";position:absolute;top:-10px;left:18px;font-family:var(--display);font-size:5rem;color:rgba(244,198,106,.25);}
+  .quote p{font-family:var(--serif);font-size:1.12rem;font-style:italic;color:#ded8c6;}
+  .quote cite{display:block;margin-top:14px;font-family:var(--display);color:var(--amber-glow);font-style:normal;font-size:1rem;}
+  .stars{color:var(--gold);letter-spacing:3px;margin-bottom:6px;}
+
+  /* ===== BOOK ===== */
+  .book{background:radial-gradient(ellipse at 50% 0%, rgba(244,198,106,.13), transparent 50%),rgba(9,15,12,.70);text-align:center;}
+  .book .lead{margin-bottom:30px;}
+  .book-cta{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;}
+  .note{font-family:var(--serif);color:var(--mist);font-size:.95rem;font-style:italic;}
+
+  /* ===== FOOTER ===== */
+  footer{background:#050907;padding:56px 24px 30px;text-align:center;position:relative;z-index:2;border-top:1px solid rgba(244,198,106,.12);}
+  footer .fbrand{font-family:var(--display);font-size:1.4rem;color:var(--amber-glow);}
+  footer .social{display:flex;gap:22px;justify-content:center;margin:18px 0;}
+  footer .social a{color:var(--mist);text-decoration:none;letter-spacing:.05em;transition:color .25s;}
+  footer .social a:hover{color:var(--amber-glow);}
+  footer .disclaimer{color:#5f7168;font-size:.82rem;max-width:520px;margin:14px auto 6px;font-style:italic;}
+  footer .copy{color:#4b5a52;font-size:.8rem;}
+
+  /* section divider mushrooms */
+  .divider{display:flex;justify-content:center;align-items:flex-end;gap:30px;margin-bottom:14px;}
+  .divider img{filter:drop-shadow(0 5px 9px rgba(0,0,0,.5));}
+
+  @media(max-width:820px){
+    .about-grid{grid-template-columns:1fr;gap:34px;}
+    .quotes{grid-template-columns:1fr;}
+    nav ul{position:fixed;inset:0 0 0 auto;width:70%;max-width:300px;flex-direction:column;justify-content:center;padding:40px;background:rgba(9,15,12,.98);transform:translateX(100%);transition:transform .35s;gap:30px;}
+    nav ul.open{transform:translateX(0);}
+    .nav-toggle{display:block;z-index:30;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none !important;scroll-behavior:auto;}
+    #spores{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="forest-bg" aria-hidden="true"></div>
+<canvas id="spores"></canvas>
+
+<!-- ===== FOREST FRAME: trunks, canopy vines, mushroom clusters ===== -->
+<div class="forest-frame" aria-hidden="true">
+
+  <!-- MUSHROOMS growing up from the corners (your vintage illustrations) -->
+  <img class="grow-shroom" src="assets/mushroom-amanita.png" alt="" style="left:10px;width:116px;animation-delay:.15s" />
+  <img class="grow-shroom" src="assets/mushroom-champ1.png" alt="" style="left:100px;width:74px;animation-delay:.5s" />
+  <img class="grow-shroom" src="assets/mushrooms-cluster.png" alt="" style="right:10px;width:124px;animation-delay:.25s" />
+  <img class="grow-shroom" src="assets/mushroom-champ2.png" alt="" style="right:110px;width:90px;animation-delay:.55s" />
+  <img class="grow-shroom" src="assets/mushroom-tall.png" alt="" style="right:196px;width:124px;animation-delay:.8s" />
+
+  <!-- FERN IMAGES (public domain), flipped & reoriented for variety -->
+  <span class="fern fern-l1"><img src="assets/fern.png" alt="" /></span>
+  <span class="fern fern-l2 flip"><img src="assets/fern.png" alt="" style="animation-delay:-3s" /></span>
+  <span class="fern fern-r1 flip"><img src="assets/fern.png" alt="" style="animation-delay:-1.5s" /></span>
+  <span class="fern fern-r2"><img src="assets/fern.png" alt="" style="animation-delay:-5s" /></span>
+
+</div>
+
+<header class="nav" id="nav">
+  <a href="#top" class="brand">✦ Branden Tarot</a>
+  <button class="nav-toggle" aria-label="Menu" id="toggle">☰</button>
+  <nav>
+    <ul id="menu">
+      <li><a href="#about">About</a></li>
+      <li><a href="#readings">Readings</a></li>
+      <li><a href="#potions">Offerings</a></li>
+      <li><a href="#watch">Watch</a></li>
+      <li><a href="#book">Book</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- HERO / TRAILHEAD -->
+<section class="hero" id="top">
+  <div class="moon" data-parallax="0.18">
+    <span class="halo"></span>
+    <img src="assets/moon.png" alt="Moon over the forest" loading="eager" />
+  </div>
+  <div class="hero-content">
+    <p class="kicker">Los Angeles · In person &amp; remote</p>
+    <h1>Branden Tarot</h1>
+    <p class="sub">Walk the path with a reader who has been listening to the cards for over thirty years.</p>
+    <p class="whisper">Honest guidance, a little humor, and a light for the darker turns of the trail.</p>
+    <div class="hero-cta">
+      <a href="#book" class="btn btn-primary">Book a Reading</a>
+      <a href="#watch" class="btn btn-ghost">Watch on YouTube</a>
+    </div>
+  </div>
+  <svg class="treeline" viewBox="0 0 1440 200" preserveAspectRatio="none" data-parallax="0.05">
+    <path d="M0,200 L0,120 Q40,60 70,110 Q90,40 120,100 Q150,50 180,110 L200,80 L220,120 Q260,50 300,110 Q330,60 360,115 Q400,55 440,120 L470,90 L500,125 Q560,60 620,120 Q660,70 700,120 L740,85 L780,125 Q840,60 900,120 Q950,70 1000,120 L1040,90 L1080,125 Q1140,55 1200,120 Q1250,65 1300,118 L1340,88 L1380,120 Q1410,70 1440,120 L1440,200 Z" fill="#050a08"/>
+  </svg>
+  <div class="scroll-hint">Follow the path ↓</div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="wrap about-grid">
+    <div class="portrait">
+      <img src="assets/branden.jpg" alt="Branden, tarot reader and spiritual counselor" loading="lazy" />
+      <span class="frameglow"></span>
+    </div>
+    <div>
+      <p class="kicker">The Storyteller's Hollow</p>
+      <h2>Meet Branden</h2>
+      <p>Branden has been reading since he was six years old, when a deck of playing cards found its way into his hands and the meanings simply arrived, like a lightbulb over his head. A natural clairvoyant, clairaudient, and clairsentient, he grew up communing with trees and learning to feel the cards without ever turning them over.</p>
+      <p>He is a blunt, honest, genuine reader. He will not let you hide or lie to yourself, and he'll leave you with comfort, clarity, and usually a laugh. His specialties are <em>yearly readings</em> that map your year month by month, and <em>decision-making readings</em> for when two or more paths lie before you.</p>
+      <div class="creds">
+        <div class="cred"><b>30+</b><span>Years reading</span></div>
+        <div class="cred"><b>3</b><span>Clair-gifts</span></div>
+        <div class="cred"><b>∞</b><span>Paths read</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- READINGS -->
+<section class="readings" id="readings">
+  <div class="wrap">
+    <p class="kicker" style="text-align:center">The Reading Grove</p>
+    <h2>Readings &amp; Sessions</h2>
+    <p class="lead">A time set aside just for you — to answer questions, give guidance, and point you toward the path that fits.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="sym">🌙</div>
+        <h3>30 Minutes</h3>
+        <div class="price">$50</div>
+        <p>A quick answer to a single question, or an update for returning clients. Great for a fast, focused pull.</p>
+        <a href="#book" class="pick">Choose this →</a>
+      </div>
+      <div class="card">
+        <div class="sym">🕯️</div>
+        <h3>45 Minutes</h3>
+        <div class="price">$65</div>
+        <p>Room to go deeper into your question and sit with the guidance that comes through.</p>
+        <a href="#book" class="pick">Choose this →</a>
+      </div>
+      <div class="card">
+        <div class="sym">✦</div>
+        <h3>60 Minutes</h3>
+        <div class="price">$80</div>
+        <p>The deepest insight into your questions, with space for the full story to unfold.</p>
+        <a href="#book" class="pick">Choose this →</a>
+      </div>
+      <div class="card featured">
+        <span class="tag">Signature</span>
+        <div class="sym">🔮</div>
+        <h3>Yearly Reading</h3>
+        <div class="price">$120</div>
+        <p>Your year ahead, month by month. Best within two weeks of your birthday or new year. Includes extra clarifying pulls.</p>
+        <a href="#book" class="pick">Choose this →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POTIONS -->
+<section class="potions" id="potions">
+  <div class="wrap">
+    <p class="kicker" style="text-align:center">Potions, Spells &amp; Incense</p>
+    <h2>Offerings</h2>
+    <p class="lead">Individually prepared candles and incense, formulated through a psychic diagnosis for exactly what you need.</p>
+    <div class="potion-grid">
+      <div class="potion">
+        <h3>Prosperity Incense or Candle</h3>
+        <div class="price">$35</div>
+        <p>To draw prosperity toward your life, your business, or a loved one.</p>
+      </div>
+      <div class="potion">
+        <h3>New Home Blessing</h3>
+        <div class="price">$35</div>
+        <p>A blend to help a new home shine and breathe. A wonderful housewarming gift.</p>
+      </div>
+      <div class="potion">
+        <h3>Customized Work</h3>
+        <div class="price">Inquire</div>
+        <p>For those who need a little more — cleansing, healing, or a boost out of a rut. Begins with a $35 consultation applied to your final price.</p>
+      </div>
+    </div>
+    <p class="note" style="text-align:center;margin-top:26px">Each item is prepared by hand. <a href="#book" style="color:var(--wisp)">Contact Branden to order →</a></p>
+  </div>
+</section>
+
+<!-- WATCH -->
+<section class="watch" id="watch">
+  <div class="wrap">
+    <p class="kicker" style="text-align:center">Whispers from the Wood</p>
+    <h2>Watch &amp; Subscribe</h2>
+    <p class="lead">New readings, card meanings, and musings — straight from the trail to you.</p>
+    <div class="video-frame">
+      <iframe src="https://www.youtube.com/embed/videoseries?list=UUlpUa3RMoKgw1rRtwsimkmA" title="Branden Tarot on YouTube" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <a href="https://www.youtube.com/channel/UClpUa3RMoKgw1rRtwsimkmA" target="_blank" rel="noopener" class="btn btn-ghost">Subscribe on YouTube</a>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi">
+  <div class="wrap">
+    <p class="kicker" style="text-align:center">Voices on the Path</p>
+    <h2>What Clients Say</h2>
+    <div class="quotes">
+      <div class="q
