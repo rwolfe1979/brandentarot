@@ -43,7 +43,7 @@
   #spores{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;}
 
   /* fixed atmospheric forest backdrop (misty trees, canopy, path glow) */
-  .forest-bg{position:fixed;inset:0;z-index:0;background:#070c0a url('assets/forest-bg.jpg') center bottom/cover no-repeat;}
+  .forest-bg{position:fixed;inset:0;z-index:0;background:#070c0a url('assets/forest-backdrop-stars.png') top center/cover no-repeat;}
   .forest-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,12,10,.25),rgba(7,12,10,.05) 40%,rgba(7,12,10,.35));}
 
   /* ===== FOREST FRAME (trunks, foliage, vines) ===== */
@@ -129,25 +129,27 @@
       radial-gradient(ellipse at 50% 8%, rgba(244,198,106,.10), transparent 45%),
       linear-gradient(180deg, rgba(10,19,16,.15) 0%, rgba(9,15,12,.42) 55%, rgba(7,12,10,.72) 100%);
   }
+  /* fixed sky-moon that wanes to new moon as you scroll */
   .moon{
-    position:absolute;top:8vh;left:50%;transform:translateX(-50%);
-    width:280px;height:280px;z-index:0;display:flex;align-items:center;justify-content:center;
+    position:fixed;top:70px;right:4vw;width:150px;height:150px;z-index:7;pointer-events:none;
   }
   .moon .halo{
-    position:absolute;inset:-38%;border-radius:50%;
+    position:absolute;inset:-42%;border-radius:50%;
     background:radial-gradient(circle, rgba(248,236,190,.5) 0%, rgba(244,198,106,.22) 42%, rgba(244,198,106,.05) 62%, transparent 74%);
     filter:blur(6px);
-    animation:moonpulse 7s ease-in-out infinite;
   }
-  .moon img{
-    position:relative;width:100%;height:100%;object-fit:contain;
-    /* warm gold tint on the cool-gray moon + glow + cast shadow */
-    filter:
-      sepia(.5) saturate(1.9) hue-rotate(-12deg) brightness(1.06) contrast(1.03)
-      drop-shadow(0 0 22px rgba(244,198,106,.5))
-      drop-shadow(0 12px 26px rgba(0,0,0,.55));
+  .moon .disc{position:absolute;inset:0;border-radius:50%;overflow:hidden;}
+  .moon .disc img{
+    width:100%;height:100%;object-fit:cover;
+    filter:sepia(.5) saturate(1.9) hue-rotate(-12deg) brightness(1.06) contrast(1.03);
   }
-  @keyframes moonpulse{0%,100%{opacity:.85;}50%{opacity:1;}}
+  .moonshadow{
+    position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;
+    background:radial-gradient(circle at 50% 45%, #0c1218, #070b10 82%);
+    filter:blur(1.6px);transform:translateX(110%);will-change:transform;
+  }
+  @media(max-width:1200px){.moon{width:120px;height:120px;top:62px;right:2.5vw;}}
+  @media(max-width:700px){.moon{width:88px;height:88px;top:56px;}}
   .hero-content{position:relative;z-index:3;}
   .hero h1{font-size:clamp(2.6rem,8vw,5.4rem);color:#fff;letter-spacing:.04em;text-shadow:0 0 40px rgba(244,198,106,.45);}
   .hero .sub{font-family:var(--serif);font-size:clamp(1.15rem,2.6vw,1.5rem);color:var(--parchment);max-width:620px;margin:10px auto 8px;}
@@ -294,9 +296,9 @@
 
 <!-- HERO / TRAILHEAD -->
 <section class="hero" id="top">
-  <div class="moon" data-parallax="0.18">
+  <div class="moon">
     <span class="halo"></span>
-    <img src="assets/moon.png" alt="Moon over the forest" loading="eager" />
+    <span class="disc"><img src="assets/moon.png" alt="Moon over the forest" loading="eager" /><span class="moonshadow" id="moonshadow"></span></span>
   </div>
   <div class="hero-content">
     <p class="kicker">Los Angeles · In person &amp; remote</p>
@@ -421,4 +423,119 @@
     <p class="kicker" style="text-align:center">Voices on the Path</p>
     <h2>What Clients Say</h2>
     <div class="quotes">
-      <div class="q
+      <div class="quote">
+        <div class="stars">★★★★★</div>
+        <p>I've had a number of tarot readings and Branden is the best. He's yet to be wrong — at least 15 readings — he nails it every time and brings all the valuable messages in a form I understand. Professional, understanding, and a real sense of trust and comfort I don't think a lot of psychics project.</p>
+        <cite>— Kiana B.</cite>
+      </div>
+      <div class="quote">
+        <div class="stars">★★★★★</div>
+        <p>Branden immediately put me at ease with a bright friendliness. He offered deep insight into exactly what I needed. His advice made a huge difference in the quality of my self-understanding. He's an awesome reader — go see Branden!</p>
+        <cite>— Aeolian H.</cite>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOK -->
+<section class="book" id="book">
+  <div class="wrap">
+    <p class="kicker" style="text-align:center">The Trailhead</p>
+    <h2>Book Your Reading</h2>
+    <p class="lead">Choose your session and step onto the path. Readings are available in person and remotely.</p>
+    <div class="book-cta">
+      <a href="#" class="btn btn-primary" id="bookBtn">Schedule &amp; Pay</a>
+      <a href="#" class="btn btn-ghost">Send a Message</a>
+    </div>
+    <p class="note">Booking &amp; payment tool drops in here (Square / Acuity). For now this is a placeholder for the mockup.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="divider">
+    <img src="assets/mushroom-champ1.png" alt="" style="height:56px" />
+    <img src="assets/mushroom-amanita.png" alt="" style="height:50px" />
+    <img src="assets/mushrooms-cluster.png" alt="" style="height:56px" />
+  </div>
+  <div class="fbrand">✦ Branden Tarot</div>
+  <div class="social">
+    <a href="https://www.youtube.com/channel/UClpUa3RMoKgw1rRtwsimkmA" target="_blank" rel="noopener">YouTube</a>
+    <a href="http://facebook.com/Lokibw" target="_blank" rel="noopener">Facebook</a>
+    <a href="#book">Contact</a>
+  </div>
+  <p class="disclaimer">All readings and offerings are for entertainment purposes only.</p>
+  <p class="copy">© 2026 Branden Tarot · Los Angeles, CA</p>
+</footer>
+
+<script>
+  // nav scroll state
+  const nav = document.getElementById('nav');
+  addEventListener('scroll', ()=> nav.classList.toggle('scrolled', scrollY>40));
+
+  // mobile menu
+  const toggle = document.getElementById('toggle');
+  const menu = document.getElementById('menu');
+  toggle.addEventListener('click', ()=> menu.classList.toggle('open'));
+  menu.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=> menu.classList.remove('open')));
+
+  // gentle parallax
+  const layers = [...document.querySelectorAll('[data-parallax]')];
+  addEventListener('scroll', ()=>{
+    const y = scrollY;
+    layers.forEach(el=>{
+      const s = parseFloat(el.dataset.parallax);
+      el.style.transform = (el.classList.contains('moon')? 'translateX(-50%) ':'') + 'translateY('+(y*s)+'px)';
+    });
+  }, {passive:true});
+
+  // placeholder booking alert
+  document.getElementById('bookBtn').addEventListener('click', e=>{e.preventDefault();alert('This is where the real scheduling + payment tool (Square / Acuity) will open. Placeholder for the mockup.');});
+
+  // moon phases: full at the top of the page, waning to a new moon at the bottom (halo fades too)
+  const moonShadow=document.getElementById('moonshadow');
+  const moonHalo=document.querySelector('.moon .halo');
+  function moonPhase(){
+    const max=document.documentElement.scrollHeight-innerHeight;
+    const p=max>0?Math.min(1,Math.max(0,scrollY/max)):0;
+    if(moonShadow) moonShadow.style.transform='translateX('+((1-p)*110)+'%)';
+    if(moonHalo) moonHalo.style.opacity=(0.95*(1-p)).toFixed(3);
+  }
+  addEventListener('scroll',moonPhase,{passive:true});
+  addEventListener('resize',moonPhase);
+  moonPhase();
+
+  // drifting spores + fireflies
+  const c = document.getElementById('spores'), x = c.getContext('2d');
+  let w,h,parts;
+  const hues=['244,217,138','143,227,214','200,168,255'];
+  function size(){w=c.width=innerWidth;h=c.height=innerHeight;}
+  function make(){
+    const wisp=Math.random()<.14;                 // occasional big floating light
+    const fire=!wisp && Math.random()<.4;          // glowing firefly
+    return {
+      x:Math.random()*w, y:Math.random()*h,
+      r: wisp?(Math.random()*3+3):(Math.random()*1.8+.5),
+      d: wisp?(Math.random()*.18+.05):(Math.random()*.4+.12),
+      sway: wisp?(Math.random()*.7+.4):(Math.random()*.4+.15),
+      o: Math.random()*.5+.25, t:Math.random()*Math.PI*2,
+      hue: hues[(Math.random()*hues.length)|0],
+      glowy: wisp||fire
+    };
+  }
+  function seed(){parts=[...Array(window.innerWidth<640?55:100)].map(make);}
+  size();seed();addEventListener('resize',()=>{size();seed();});
+  (function loop(){
+    x.clearRect(0,0,w,h);
+    parts.forEach(p=>{
+      p.y-=p.d; p.t+=.018; p.x+=Math.sin(p.t)*p.sway*.5;
+      if(p.y<-8){p.y=h+8;p.x=Math.random()*w;}
+      const a = p.glowy ? (.35+Math.sin(p.t)*.3) : p.o*.45;
+      x.beginPath();x.arc(p.x,p.y,p.r,0,7);
+      x.fillStyle='rgba('+p.hue+','+Math.max(a,.08)+')';
+      x.shadowBlur=p.glowy?(p.r*4):3; x.shadowColor='rgba('+p.hue+',.85)'; x.fill();
+    });
+    requestAnimationFrame(loop);
+  })();
+</script>
+</body>
+</html>
