@@ -722,4 +722,126 @@
 
     function goTo(n){
       if(busy || n===idx || n<0 || n>N-1) return;
-      var from=idx; busy=true; idx=n; markNav(n)
+      var from=idx; busy=true; idx=n; markNav(n);
+      if(from===0){                                   // down into the forest
+        body.classList.add('snap');                    // scene layers swap instantly (no fades) behind the leaves
+        leaves.style.display='block';
+        var swapped=false;
+        anim(reduce?1:1150, function(k){
+          renderLeaves(k);
+          if(!swapped && k>=0.5){                       // leaves fully cover -> hard-swap the entire scene at once
+            swapped=true; sky.style.opacity=0; setActive(n);   // forest + trees + content all appear together
+          }
+        }, function(){ clearLeaves(); body.classList.remove('snap'); busy=false; });
+      } else if(n===0){                                // up to the sky (leaves start dense, clear downward)
+        body.classList.add('snap');
+        leaves.style.display='block';
+        var swapped=false;
+        anim(reduce?1:700, function(k){                 // shorter: up only sweeps 60% of the range, so it moves at the same speed as down
+          renderLeaves(0.6*(1-k));
+          if(!swapped && k>=0.33){                      // leaves fully cover -> hard-swap back to the sky at once
+            swapped=true; sky.style.opacity=1; setActive(0);   // sky-open on, trees + content hidden together
+          }
+        }, function(){ clearLeaves(); body.classList.remove('snap'); busy=false; });
+      } else {                                         // content -> content cross-fade
+        setActive(n);
+        setTimeout(function(){ busy=false; }, 640);
+      }
+    }
+
+    // ----- inputs -----
+    function next(){ goTo(idx+1); }
+    function prev(){ goTo(idx-1); }
+
+    if(deckMode && !mobile){                          // desktop: scroll / keys / swipe drive the paged deck
+      var wlock=false;
+      deck.addEventListener('wheel', function(e){
+        var cur=pages[idx], inner=cur && cur.scrollHeight>cur.clientHeight+2;
+        if(inner){ var atTop=cur.scrollTop<=0, atBot=cur.scrollTop+cur.clientHeight>=cur.scrollHeight-2;
+          if((e.deltaY>0&&!atBot)||(e.deltaY<0&&!atTop)) return; }
+        e.preventDefault();
+        if(busy||wlock) return; wlock=true; setTimeout(function(){wlock=false;},720);
+        if(e.deltaY>0) next(); else if(e.deltaY<0) prev();
+      }, {passive:false});
+      addEventListener('keydown', function(e){
+        if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); next(); }
+        else if(e.key==='ArrowUp'||e.key==='PageUp'){ e.preventDefault(); prev(); }
+        else if(e.key==='Home'){ goTo(0); } else if(e.key==='End'){ goTo(N-1); }
+      });
+      var ty=null;
+      addEventListener('touchstart', function(e){ ty=e.touches[0].clientY; }, {passive:true});
+      addEventListener('touchend', function(e){
+        if(ty===null) return;
+        var dy=ty-e.changedTouches[0].clientY, cur=pages[idx], inner=cur && cur.scrollHeight>cur.clientHeight+2;
+        if(!inner){ if(Math.abs(dy)>45){ dy>0?next():prev(); } }
+        else { var atTop=cur.scrollTop<=0, atBot=cur.scrollTop+cur.clientHeight>=cur.scrollHeight-2;
+               if(dy>45&&atBot) next(); else if(dy<-45&&atTop) prev(); }
+        ty=null;
+      }, {passive:true});
+      dots.forEach(function(d){ d.addEventListener('click', function(){ goTo(parseInt(d.getAttribute('data-i'),10)); }); });
+    }
+
+    if(deckMode && mobile){                           // mobile: up/down buttons move between pages (no scroll-to-page)
+      mnavUp=document.getElementById('mUp'); mnavDn=document.getElementById('mDown');
+      if(mnavUp) mnavUp.addEventListener('click', function(){ prev(); });
+      if(mnavDn) mnavDn.addEventListener('click', function(){ next(); });
+      // wrap each card row so it can be swiped, with prev/next arrows
+      ['.cards','.potion-grid','.quotes'].forEach(function(sel){
+        [].slice.call(document.querySelectorAll(sel)).forEach(function(car){
+          var wrap=document.createElement('div'); wrap.className='carousel-wrap';
+          car.parentNode.insertBefore(wrap, car); wrap.appendChild(car);
+          ['l','r'].forEach(function(d){
+            var b=document.createElement('button'); b.className='carrow carrow-'+d;
+            b.setAttribute('aria-label', d==='l'?'Previous card':'Next card'); b.innerHTML=(d==='l'?'‹':'›');
+            b.addEventListener('click', function(){ var f=car.firstElementChild, step=f?f.offsetWidth+14:car.clientWidth*0.8; car.scrollBy({left:d==='l'?-step:step, behavior:'smooth'}); });
+            wrap.appendChild(b);
+          });
+        });
+      });
+    }
+
+    // nav + CTA links: advance a page in deck mode, smooth-scroll to the section otherwise
+    [].slice.call(document.querySelectorAll('[data-page]')).forEach(function(a){
+      a.addEventListener('click', function(e){ e.preventDefault(); menu.classList.remove('open');
+        var n=parseInt(a.getAttribute('data-page'),10);
+        if(deckMode) goTo(n); else if(pages[n]) pages[n].scrollIntoView({behavior:'smooth'});
+      });
+    });
+
+    // ----- init -----
+    if(deckMode){
+      body.classList.add('deck'); clearLeaves(); setActive(0); sky.style.opacity=1;
+    } else {                                         // reduced motion: static, natural scroll
+      sky.style.opacity=0; clearLeaves();
+      function mp(){ var max=document.documentElement.scrollHeight-innerHeight; moonTo(max>0?clamp(scrollY/max):0); }
+      addEventListener('scroll',mp,{passive:true}); addEventListener('resize',mp); mp();
+    }
+  })();
+
+  // ---------- drifting spores + fireflies ----------
+  var c=document.getElementById('spores'), x=c.getContext('2d'), w,h,parts;
+  var hues=['244,217,138','143,227,214','200,168,255'];
+  function size(){ w=c.width=innerWidth; h=c.height=innerHeight; }
+  function make(){
+    var wisp=Math.random()<.14, fire=!wisp && Math.random()<.4;
+    return { x:Math.random()*w, y:Math.random()*h, r:wisp?(Math.random()*3+3):(Math.random()*1.8+.5),
+      d:wisp?(Math.random()*.18+.05):(Math.random()*.4+.12), sway:wisp?(Math.random()*.7+.4):(Math.random()*.4+.15),
+      o:Math.random()*.5+.25, t:Math.random()*Math.PI*2, hue:hues[(Math.random()*hues.length)|0], glowy:wisp||fire };
+  }
+  function seed(){ parts=Array.from({length:(window.innerWidth<640?55:100)}, make); }
+  size(); seed(); addEventListener('resize', function(){ size(); seed(); });
+  (function loop(){
+    x.clearRect(0,0,w,h);
+    parts.forEach(function(p){
+      p.y-=p.d; p.t+=.018; p.x+=Math.sin(p.t)*p.sway*.5;
+      if(p.y<-8){ p.y=h+8; p.x=Math.random()*w; }
+      var a=p.glowy ? (.35+Math.sin(p.t)*.3) : p.o*.45;
+      x.beginPath(); x.arc(p.x,p.y,p.r,0,7);
+      x.fillStyle='rgba('+p.hue+','+Math.max(a,.08)+')';
+      x.shadowBlur=p.glowy?(p.r*4):3; x.shadowColor='rgba('+p.hue+',.85)'; x.fill();
+    });
+    requestAnimationFrame(loop);
+  })();
+</script>
+</body>
+</html>
