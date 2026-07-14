@@ -42,7 +42,7 @@
   .fox{position:fixed;left:50%;bottom:8vh;z-index:2;height:18vh;pointer-events:none;display:none;opacity:0;
     transform:translateX(calc(-50% - 68vw));transform-origin:bottom center;
     filter:drop-shadow(0 0 12px rgba(244,198,106,.28)) drop-shadow(0 6px 10px rgba(0,0,0,.55));will-change:transform;}
-  @media(max-width:820px){.fox{display:none !important;}}
+  @media(max-width:560px){.fox{opacity:.95;}}   /* fox stays on mobile (JS-controlled), just a touch softer on tiny screens */
 
   /* tarot cards tossed onto the table at the bottom of Readings */
   .cards-toss{position:fixed;left:0;right:0;bottom:0;z-index:5;height:0;pointer-events:none;}
@@ -55,7 +55,13 @@
   #cardsToss.dealt .tc1{transform:translateX(calc(-50% - 13vh)) rotate(-17deg);transition-delay:0s;}
   #cardsToss.dealt .tc2{transform:translateX(-50%) translateY(-2vh) rotate(3deg);transition-delay:.12s;}
   #cardsToss.dealt .tc3{transform:translateX(calc(-50% + 13vh)) rotate(18deg);transition-delay:.24s;}
-  @media(max-width:820px){.cards-toss{display:none;}}
+  @media(max-width:820px){   /* mobile: three fanned at the bottom, behind the content */
+    .cards-toss{z-index:2;}
+    .tcard{height:27vh;}
+    #cardsToss.dealt .tc1{transform:translateX(calc(-50% - 17vw)) translateY(0) rotate(-15deg);transition-delay:0s;}
+    #cardsToss.dealt .tc2{transform:translateX(-50%) translateY(-2vh) rotate(3deg);transition-delay:.12s;}
+    #cardsToss.dealt .tc3{transform:translateX(calc(-50% + 17vw)) translateY(0) rotate(16deg);transition-delay:.24s;}
+  }
   @media(prefers-reduced-motion:reduce){.tcard{transition:none;}}
 
   /* incense + amethyst with a ribbon of smoke on the Offerings page */
@@ -63,7 +69,52 @@
     filter:drop-shadow(0 0 20px rgba(180,120,255,.28)) drop-shadow(0 8px 14px rgba(0,0,0,.5));}
   .smoke-canvas{position:fixed;left:calc(50% + 2vh);bottom:28vh;width:30vh;height:58vh;transform:translateX(-50%);z-index:3;pointer-events:none;opacity:0;transition:opacity .6s ease;}
   body.offering .incense-holder, body.offering .smoke-canvas{opacity:1;}
-  @media(max-width:820px){.incense-holder,.smoke-canvas{display:none;}}
+
+  /* ===== Watch: raven perches on the video (JS-driven fly-in) ===== */
+  .raven{position:fixed;left:21vw;bottom:64vh;height:24vh;z-index:3;pointer-events:none;display:none;opacity:0;
+    transform-origin:50% 100%;filter:drop-shadow(0 8px 16px rgba(0,0,0,.5));}
+
+  /* ===== Testimonials: hanging lantern lowers + flickers, moth flutters ===== */
+  .lantern{position:fixed;right:6vw;top:-46vh;height:40vh;z-index:3;pointer-events:none;opacity:0;transition:top 1.1s cubic-bezier(.3,.7,.35,1), opacity .5s ease;}
+  .lantern img{height:100%;width:auto;display:block;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5));}
+  .lantern .lantern-glow{position:absolute;left:50%;top:55%;width:58%;height:32%;transform:translate(-50%,-50%);border-radius:50%;
+    background:radial-gradient(circle, rgba(255,196,96,.6), rgba(255,158,58,.2) 45%, transparent 70%);filter:blur(6px);mix-blend-mode:screen;animation:flicker 2.8s ease-in-out infinite;}
+  body.at-testi .lantern{top:0;opacity:1;}   /* chain attached to the top of the screen */
+  @keyframes flicker{0%,100%{opacity:.82;transform:translate(-50%,-50%) scale(1);}22%{opacity:1;transform:translate(-50%,-51%) scale(1.06);}44%{opacity:.66;transform:translate(-50%,-49%) scale(.96);}68%{opacity:.94;transform:translate(-50%,-50%) scale(1.03);}}
+  .moth{position:fixed;z-index:3;pointer-events:none;display:none;opacity:0;height:11vh;transform-origin:50% 50%;filter:drop-shadow(0 4px 9px rgba(0,0,0,.5));}
+
+  /* ===== Book: the sealed letter is tossed in ===== */
+  .letter{position:fixed;left:50%;bottom:-6vh;height:27vh;z-index:3;pointer-events:none;transform-origin:50% 100%;
+    filter:drop-shadow(0 10px 20px rgba(0,0,0,.55));opacity:0;transform:translateX(150vw) translateY(-28vh) rotate(210deg);
+    transition:transform .85s cubic-bezier(.18,.7,.2,1.03), opacity .3s ease;}
+  body.at-book .letter{transform:translateX(-50%) translateY(-3vh) rotate(-5deg);opacity:1;}
+
+  /* ===== MOBILE: paged deck navigated by bottom buttons ===== */
+  .mnav{display:none;}
+  @media(max-width:820px){
+    body.deck .page{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:74px 18px 108px;}   /* content scrolls; room for the buttons */
+    body.deck .mnav{display:flex;position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:22;gap:18px;}
+    body.deck.at-sky .mnav{display:none;}   /* sky slide: "Step Onto the Path" handles it, no buttons */
+    .mbtn{width:52px;height:52px;border-radius:50%;background:rgba(9,15,12,.85);border:1px solid rgba(244,198,106,.45);color:var(--amber-glow);font-family:var(--serif);font-size:1.5rem;line-height:1;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.55);transition:opacity .3s, transform .15s;}
+    .mbtn:active{transform:scale(.9);}
+    .mbtn.off{opacity:.22;pointer-events:none;}
+    .incense-holder{left:auto;right:0;transform:none;height:26vh;z-index:3;}      /* incense tucked to the side, behind content */
+    .smoke-canvas{left:auto;right:-2vh;bottom:24vh;width:16vh;height:44vh;transform:none;}
+
+    /* card rows become swipeable carousels */
+    body.deck .wrap .cards, body.deck .wrap .potion-grid, body.deck .wrap .quotes{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;max-width:none;margin:16px -18px 0;padding:6px 0 12px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    body.deck .wrap .cards::-webkit-scrollbar, body.deck .wrap .potion-grid::-webkit-scrollbar, body.deck .wrap .quotes::-webkit-scrollbar{display:none;}
+    body.deck .wrap .cards>*, body.deck .wrap .potion-grid>*, body.deck .wrap .quotes>*{scroll-snap-align:center;flex:0 0 78%;min-width:78%;}
+    body.deck .wrap .cards::before, body.deck .wrap .cards::after, body.deck .wrap .potion-grid::before, body.deck .wrap .potion-grid::after, body.deck .wrap .quotes::before, body.deck .wrap .quotes::after{content:"";flex:0 0 12%;min-width:12%;}   /* spacers so first/last can reach center */
+    .carousel-wrap{position:relative;}
+    .carrow{position:absolute;top:46%;transform:translateY(-50%);z-index:8;width:38px;height:38px;border-radius:50%;background:rgba(9,15,12,.82);border:1px solid rgba(244,198,106,.4);color:var(--amber-glow);font-size:1.35rem;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.5);}
+    .carrow-l{left:-2px;} .carrow-r{right:-2px;}
+    .raven{height:13vh;left:1vw;bottom:auto;top:39vh;}
+    .lantern{height:26vh;right:1vw;}
+    body.at-testi .lantern{top:0;}
+    .moth{display:none !important;}          /* mobile: lantern + flicker only */
+    .letter{height:17vh;}
+  }
 
   /* drifting spores / fireflies */
   #spores{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;}
@@ -221,6 +272,7 @@
   .minifooter .copy{color:#4b5a52;font-size:.78rem;}
 
   @media(max-width:820px){
+    .page{padding:84px 20px;}
     .about-grid{grid-template-columns:1fr;gap:28px;}
     .quotes{grid-template-columns:1fr;}
     nav ul{position:fixed;inset:0 0 0 auto;width:70%;max-width:300px;flex-direction:column;justify-content:center;padding:40px;background:rgba(9,15,12,.98);transform:translateX(100%);transition:transform .35s;gap:28px;z-index:25;}
@@ -253,6 +305,10 @@
 </div>
 <img class="incense-holder" id="incense" src="assets/incense-crystal.webp" alt="" aria-hidden="true" />
 <canvas class="smoke-canvas" id="smokeCanvas" aria-hidden="true"></canvas>
+<img id="raven" class="raven" src="assets/raven-perched.webp" alt="" aria-hidden="true" />
+<div id="lantern" class="lantern" aria-hidden="true"><img src="assets/lantern.webp" alt="" /><span class="lantern-glow"></span></div>
+<img id="moth" class="moth" src="assets/moth-a.webp" alt="" aria-hidden="true" />
+<img id="letter" class="letter" src="assets/letter.webp" alt="" aria-hidden="true" />
 
 <canvas id="spores"></canvas>
 
@@ -276,6 +332,10 @@
 </header>
 
 <div class="dots" id="dots" aria-hidden="true"></div>
+<div class="mnav" id="mnav" aria-hidden="true">
+  <button class="mbtn" id="mUp" aria-label="Previous page">&#8593;</button>
+  <button class="mbtn" id="mDown" aria-label="Next page">&#8595;</button>
+</div>
 
 <main id="deck">
 
@@ -420,11 +480,6 @@
   <!-- 6 · BOOK YOUR READING -->
   <section class="page book" id="p-book" data-i="6">
     <div class="wrap">
-      <div class="divider">
-        <img src="assets/mushroom-champ1.png" alt="" style="height:52px" />
-        <img src="assets/mushroom-amanita.png" alt="" style="height:46px" />
-        <img src="assets/mushrooms-cluster.png" alt="" style="height:52px" />
-      </div>
       <p class="kicker">The Trailhead</p>
       <h2>Book Your Reading</h2>
       <p class="lead">Choose your session and step onto the path. Readings are available in person and remotely.</p>
@@ -490,6 +545,8 @@
     var dotsWrap=document.getElementById('dots');
     var navLinks=[].slice.call(document.querySelectorAll('nav a[data-page]'));
     var idx=0, busy=false, reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var mobile=matchMedia('(max-width: 820px)').matches, deckMode=!reduce, fScale=mobile?0.55:1;
+    var mnavUp=null, mnavDn=null;
 
     function clamp(v){return v<0?0:(v>1?1:v);}
     function seg(p,a,b){return clamp((p-a)/(b-a));}
@@ -508,15 +565,22 @@
     function markNav(n){
       dots.forEach(function(d,i){ d.classList.toggle('on', i===n); });
       navLinks.forEach(function(a){ a.classList.toggle('on', parseInt(a.getAttribute('data-page'),10)===n); });
+      if(mnavUp) mnavUp.classList.toggle('off', n<=0);
+      if(mnavDn) mnavDn.classList.toggle('off', n>=N-1);
       moonTo(N>1 ? n/(N-1) : 0);
     }
     function setActive(n){
       pages.forEach(function(p,i){ p.classList.toggle('active', i===n); });
+      if(pages[n]) pages[n].scrollTop=0;            // start each page from the top (matters on mobile where pages scroll)
       body.classList.toggle('at-sky', n===0);      // skylayer (sky-open) handled by the descent anim + init
       markNav(n);
-      cardsToss.classList.toggle('dealt', n===3);  // deal the tarot cards on the Readings page
+      cardsToss.classList.toggle('dealt', n===3);  // deal the tarot cards on the Readings page only
       body.classList.toggle('offering', n===4);    // light the incense on the Offerings page
       smokeSet(n===4);
+      body.classList.toggle('at-testi', n===6);    // lantern lowers on What Clients Say
+      body.classList.toggle('at-book', n===7);     // letter tossed in on Book
+      if(n===5) ravenShow(); else ravenHide();     // raven perches on Watch
+      if(n===6) mothShow(); else mothHide();        // moth flutters to the lantern
       var fside=(n===1)?'left':(n===2)?'right':null;   // fox lives on the story + Meet Branden pages
       if(fside) foxGoTo(fside);
       else if(n===0) foxHide();      // leaf transition to the sky covers everything; the fox just vanishes with it
@@ -550,6 +614,49 @@
     addEventListener('resize', function(){ if(smokeOn) smokeSize(); });
     if(smokeCv){ smokeSize(); smokeLoop(); }
 
+    // ----- raven perches on the Watch slide (flies in, then swaps to the sitting frame) -----
+    var raven=document.getElementById('raven'), RAVEN_F='assets/raven-flight.webp', RAVEN_P='assets/raven-perched.webp';
+    var vslideEl=document.getElementById('vslide'), ravenState='idle', ravenTmr=null;
+    function layoutRaven(){    // pin the perch to the video's top-left corner at any screen size
+      if(!raven || !vslideEl || raven.style.display==='none') return;
+      var r=vslideEl.getBoundingClientRect(); if(r.width<10) return;
+      raven.style.left=(r.left - raven.offsetWidth*0.45)+'px';   // feet at the video's left edge, body out over the margin
+      raven.style.top =(r.top  - raven.offsetHeight*0.86)+'px';  // feet just on the top edge
+      raven.style.bottom='auto';
+    }
+    function ravenShow(){
+      if(!raven || ravenState==='perched' || ravenState==='flying') return;
+      raven.style.display='block';
+      if(reduce){ raven.src=RAVEN_P; raven.style.height=(mobile?13:24)+'vh'; layoutRaven(); raven.style.transition='none'; raven.style.transform='none'; raven.style.opacity='1'; ravenState='perched'; return; }
+      ravenState='flying';
+      raven.src=RAVEN_F; raven.style.height=(mobile?18:32)+'vh'; layoutRaven();
+      raven.style.transition='none'; raven.style.transform='translateX(-80vw) translateY(-12vh)'; raven.style.opacity='1';
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        raven.style.transition='transform 1s cubic-bezier(.25,.6,.3,1)'; raven.style.transform='translateX(0) translateY(0)';
+      }); });
+      ravenTmr=setTimeout(function(){ raven.style.transition='none'; raven.src=RAVEN_P; raven.style.height=(mobile?13:24)+'vh'; layoutRaven(); raven.style.transform='none'; ravenState='perched'; }, 1050);
+    }
+    function ravenHide(){ if(!raven) return; if(ravenTmr){clearTimeout(ravenTmr);ravenTmr=null;} raven.style.opacity='0'; ravenState='idle'; setTimeout(function(){ if(ravenState==='idle') raven.style.display='none'; }, 320); }
+    if(raven){
+      addEventListener('resize', function(){ if(ravenState==='perched') layoutRaven(); });
+      var _wp=document.getElementById('p-watch'); if(_wp) _wp.addEventListener('scroll', function(){ if(ravenState==='perched') layoutRaven(); }, {passive:true});
+    }
+
+    // ----- moth flutters to the lantern on the Testimonials slide (desktop only), then flaps -----
+    var moth=document.getElementById('moth'), MOTH_A='assets/moth-a.webp', MOTH_B='assets/moth-b.webp';
+    var mothState='idle', mothTmr=null, mothFlap=null;
+    function mothShow(){
+      if(!moth || mobile || reduce || mothState!=='idle') return;
+      mothState='flying'; moth.src=MOTH_A; moth.style.display='block'; moth.style.opacity='1';
+      moth.style.transition='none'; moth.style.left='96vw'; moth.style.top='92vh'; moth.style.transform='scale(.7) rotate(12deg)';
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        moth.style.transition='left 1.7s ease, top 1.7s ease, transform 1.7s ease';
+        moth.style.left='82vw'; moth.style.top='19vh'; moth.style.transform='scale(1) rotate(-6deg)';
+      }); });
+      mothTmr=setTimeout(function(){ mothState='resting'; var b=false; mothFlap=setInterval(function(){ b=!b; moth.src=b?MOTH_B:MOTH_A; }, 950); }, 1750);
+    }
+    function mothHide(){ if(!moth) return; if(mothTmr){clearTimeout(mothTmr);mothTmr=null;} if(mothFlap){clearInterval(mothFlap);mothFlap=null;} moth.style.opacity='0'; mothState='idle'; setTimeout(function(){ if(mothState==='idle') moth.style.display='none'; }, 320); }
+
     // ----- fox (Branden): walks in and sits (from the left on the story, the right on Meet Branden) -----
     var fox=document.getElementById('fox');
     var FOX_SIT_SRC='assets/fox-sit.webp',
@@ -557,7 +664,10 @@
         FOX_RUN =['assets/fox-run-a.webp','assets/fox-run-b.webp'];
     var foxX=-68, foxSide='left', foxState='idle', foxRAF=null, foxDelay=null, foxCycle=null;
     // positions are the fox's CENTER offset from mid-screen (vw): negative = left of center
-    function foxCfg(side){ return side==='right' ? {start:68,sit:30,walkFlip:true,runFlip:false} : {start:-68,sit:-27,walkFlip:false,runFlip:true}; }
+    function foxCfg(side){
+      if(mobile) return side==='right' ? {start:72,sit:36,walkFlip:true,runFlip:false} : {start:-72,sit:-36,walkFlip:false,runFlip:true};   // tucked into the corner
+      return side==='right' ? {start:68,sit:30,walkFlip:true,runFlip:false} : {start:-68,sit:-27,walkFlip:false,runFlip:true};
+    }
     function foxAt(x,flip){ foxX=x; fox.style.transform='translateX(calc(-50% + '+x+'vw)) scaleX('+(flip?-1:1)+')'; }
     function foxCycleFrames(frames,ms){ var i=0; fox.src=frames[0]; clearInterval(foxCycle); foxCycle=setInterval(function(){ i=(i+1)%frames.length; fox.src=frames[i]; },ms); }
     function foxCancel(){ if(foxRAF)cancelAnimationFrame(foxRAF); foxRAF=null; if(foxDelay)clearTimeout(foxDelay); foxDelay=null; clearInterval(foxCycle); foxCycle=null; }
@@ -568,27 +678,27 @@
     }
     var easeOut=function(k){return k*k*(3-2*k);}, easeIn=function(k){return k*k;};
     function foxEnter(side){
-      if(reduce || innerWidth<=820) return;
+      if(reduce) return;
       foxCancel(); foxState='entering'; foxSide=side;
       var c=foxCfg(side);
-      fox.style.display='block'; fox.style.opacity='1'; fox.style.height='27vh';   // walk fills less of the canvas -> scale up to match the sit size
+      fox.style.display='block'; fox.style.opacity='1'; fox.style.height=(27*fScale)+'vh';   // walk fills less of the canvas -> scale up to match the sit size
       foxCycleFrames(FOX_WALK,150); foxAt(c.start,c.walkFlip);
       foxTween(c.start,c.sit,1700,easeOut,function(x){ foxAt(x,c.walkFlip); }, function(){   // starts immediately, no delay
-        clearInterval(foxCycle); foxCycle=null; fox.style.height='18vh'; fox.src=FOX_SIT_SRC; foxAt(c.sit,false); foxState='in';
+        clearInterval(foxCycle); foxCycle=null; fox.style.height=(18*fScale)+'vh'; fox.src=FOX_SIT_SRC; foxAt(c.sit,false); foxState='in';
       });
     }
     function foxExit(done){
       if(foxState==='idle'){ if(done)done(); return; }
       var c=foxCfg(foxSide);
       foxCancel(); foxState='exiting';
-      fox.style.height='30vh';                        // run pose is long, so keep it a touch smaller so it doesn't read oversized
+      fox.style.height=(30*fScale)+'vh';              // run pose is long, so keep it a touch smaller so it doesn't read oversized
       foxCycleFrames(FOX_RUN,95);
       foxTween(foxX,c.start,850,easeIn,function(x){ foxAt(x,c.runFlip); }, function(){
         clearInterval(foxCycle); foxCycle=null; fox.style.opacity='0'; fox.style.display='none'; foxState='idle'; if(done)done();
       });
     }
     function foxGoTo(side){
-      if(reduce || innerWidth<=820) return;
+      if(reduce) return;
       if((foxState==='in'||foxState==='entering') && foxSide===side) return;   // already here
       if(foxState==='idle') foxEnter(side);
       else foxExit(function(){ foxEnter(side); });                              // switch pages: run off, then re-enter
@@ -612,105 +722,4 @@
 
     function goTo(n){
       if(busy || n===idx || n<0 || n>N-1) return;
-      var from=idx; busy=true; idx=n; markNav(n);
-      if(from===0){                                   // down into the forest
-        body.classList.add('snap');                    // scene layers swap instantly (no fades) behind the leaves
-        leaves.style.display='block';
-        var swapped=false;
-        anim(reduce?1:1150, function(k){
-          renderLeaves(k);
-          if(!swapped && k>=0.5){                       // leaves fully cover -> hard-swap the entire scene at once
-            swapped=true; sky.style.opacity=0; setActive(n);   // forest + trees + content all appear together
-          }
-        }, function(){ clearLeaves(); body.classList.remove('snap'); busy=false; });
-      } else if(n===0){                                // up to the sky (leaves start dense, clear downward)
-        body.classList.add('snap');
-        leaves.style.display='block';
-        var swapped=false;
-        anim(reduce?1:700, function(k){                 // shorter: up only sweeps 60% of the range, so it moves at the same speed as down
-          renderLeaves(0.6*(1-k));
-          if(!swapped && k>=0.33){                      // leaves fully cover -> hard-swap back to the sky at once
-            swapped=true; sky.style.opacity=1; setActive(0);   // sky-open on, trees + content hidden together
-          }
-        }, function(){ clearLeaves(); body.classList.remove('snap'); busy=false; });
-      } else {                                         // content -> content cross-fade
-        setActive(n);
-        setTimeout(function(){ busy=false; }, 640);
-      }
-    }
-
-    // ----- inputs -----
-    function next(){ goTo(idx+1); }
-    function prev(){ goTo(idx-1); }
-
-    var wlock=false;
-    deck.addEventListener('wheel', function(e){
-      var cur=pages[idx], inner=cur && cur.scrollHeight>cur.clientHeight+2;
-      if(inner){
-        var atTop=cur.scrollTop<=0, atBot=cur.scrollTop+cur.clientHeight>=cur.scrollHeight-2;
-        if((e.deltaY>0&&!atBot)||(e.deltaY<0&&!atTop)) return;   // let the page scroll internally
-      }
-      e.preventDefault();
-      if(busy||wlock) return; wlock=true; setTimeout(function(){wlock=false;},720);
-      if(e.deltaY>0) next(); else if(e.deltaY<0) prev();
-    }, {passive:false});
-
-    addEventListener('keydown', function(e){
-      if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); next(); }
-      else if(e.key==='ArrowUp'||e.key==='PageUp'){ e.preventDefault(); prev(); }
-      else if(e.key==='Home'){ goTo(0); } else if(e.key==='End'){ goTo(N-1); }
-    });
-
-    var ty=null;
-    addEventListener('touchstart', function(e){ ty=e.touches[0].clientY; }, {passive:true});
-    addEventListener('touchend', function(e){
-      if(ty===null) return;
-      var dy=ty-e.changedTouches[0].clientY, cur=pages[idx], inner=cur && cur.scrollHeight>cur.clientHeight+2;
-      if(!inner){ if(Math.abs(dy)>45){ dy>0?next():prev(); } }
-      else { var atTop=cur.scrollTop<=0, atBot=cur.scrollTop+cur.clientHeight>=cur.scrollHeight-2;
-             if(dy>45&&atBot) next(); else if(dy<-45&&atTop) prev(); }
-      ty=null;
-    }, {passive:true});
-
-    [].slice.call(document.querySelectorAll('[data-page]')).forEach(function(a){
-      a.addEventListener('click', function(e){ e.preventDefault(); menu.classList.remove('open'); goTo(parseInt(a.getAttribute('data-page'),10)); });
-    });
-    dots.forEach(function(d){ d.addEventListener('click', function(){ goTo(parseInt(d.getAttribute('data-i'),10)); }); });
-
-    // ----- init -----
-    if(reduce){
-      sky.style.opacity=0; clearLeaves();
-      function mp(){ var max=document.documentElement.scrollHeight-innerHeight; moonTo(max>0?clamp(scrollY/max):0); }
-      addEventListener('scroll',mp,{passive:true}); addEventListener('resize',mp); mp();
-    } else {
-      body.classList.add('deck'); clearLeaves(); setActive(0); sky.style.opacity=1;
-    }
-  })();
-
-  // ---------- drifting spores + fireflies ----------
-  var c=document.getElementById('spores'), x=c.getContext('2d'), w,h,parts;
-  var hues=['244,217,138','143,227,214','200,168,255'];
-  function size(){ w=c.width=innerWidth; h=c.height=innerHeight; }
-  function make(){
-    var wisp=Math.random()<.14, fire=!wisp && Math.random()<.4;
-    return { x:Math.random()*w, y:Math.random()*h, r:wisp?(Math.random()*3+3):(Math.random()*1.8+.5),
-      d:wisp?(Math.random()*.18+.05):(Math.random()*.4+.12), sway:wisp?(Math.random()*.7+.4):(Math.random()*.4+.15),
-      o:Math.random()*.5+.25, t:Math.random()*Math.PI*2, hue:hues[(Math.random()*hues.length)|0], glowy:wisp||fire };
-  }
-  function seed(){ parts=Array.from({length:(window.innerWidth<640?55:100)}, make); }
-  size(); seed(); addEventListener('resize', function(){ size(); seed(); });
-  (function loop(){
-    x.clearRect(0,0,w,h);
-    parts.forEach(function(p){
-      p.y-=p.d; p.t+=.018; p.x+=Math.sin(p.t)*p.sway*.5;
-      if(p.y<-8){ p.y=h+8; p.x=Math.random()*w; }
-      var a=p.glowy ? (.35+Math.sin(p.t)*.3) : p.o*.45;
-      x.beginPath(); x.arc(p.x,p.y,p.r,0,7);
-      x.fillStyle='rgba('+p.hue+','+Math.max(a,.08)+')';
-      x.shadowBlur=p.glowy?(p.r*4):3; x.shadowColor='rgba('+p.hue+',.85)'; x.fill();
-    });
-    requestAnimationFrame(loop);
-  })();
-</script>
-</body>
-</html>
+      var from=idx; busy=true; idx=n; markNav(n)
