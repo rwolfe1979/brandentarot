@@ -24,7 +24,7 @@
   .backdrop{position:fixed;inset:0;z-index:0;background:#070c0a center bottom/cover no-repeat url('assets/forest-path-scene.webp');}
   .backdrop::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,12,10,.58),rgba(7,12,10,.45) 42%,rgba(7,12,10,.8));}
   .skylayer{position:fixed;inset:0;z-index:1;background:#050a08 center/cover no-repeat url('assets/sky-open.jpg');opacity:0;transition:opacity .7s ease;}
-  body.snap .skylayer, body.snap .frame, body.snap .page{transition:none !important;}   /* instant scene swaps behind the leaves */
+  body.snap .skylayer, body.snap .frame, body.snap .page, body.snap .goddess{transition:none !important;}   /* instant scene swaps behind the leaves */
 
   /* leaf-fall transition layer (canopy) */
   .leaves{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden;display:none;}   /* foliage sits above the content and reveals it as it passes */
@@ -250,6 +250,12 @@
   .moonshadow{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 50% 45%, #0c1218, #070b10 82%);filter:blur(1.6px);transform:translateX(110%);will-change:transform;}
   @media(max-width:700px){.moon{width:92px;height:92px;top:8vh;}}
 
+  /* faint moon goddess in the sky, opening slide only. Her head sits behind the moon disc. */
+  .goddess{position:fixed;left:50%;top:calc(7vh - 51px);width:440px;height:440px;transform:translateX(-50%);z-index:1;
+    pointer-events:none;opacity:0;transition:opacity .7s ease;}   /* same timing as the sky layer */
+  body.deck.at-sky .goddess{opacity:.075;}
+  @media(max-width:700px){.goddess{width:320px;height:320px;top:calc(8vh - 37px);}}
+
   /* magical primary CTA + demoted secondary links on the sky page */
   .btn-sm{padding:9px 18px;font-size:.9rem;}
   .btn-journey{font-family:var(--display);letter-spacing:.06em;padding:15px 34px;animation:pulseGlow 3.4s ease-in-out infinite;}
@@ -321,11 +327,38 @@
   /* ===== ABOUT ===== */
   .about-grid{display:grid;grid-template-columns:0.8fr 1.2fr;gap:44px;align-items:center;}
   body.deck .about-grid{grid-template-columns:1fr;gap:22px;max-width:560px;}
-  .portrait{aspect-ratio:4/5;border-radius:14px;position:relative;overflow:hidden;background:linear-gradient(160deg,#12241d,#0a1410);border:1px solid rgba(244,198,106,.2);box-shadow:var(--shadow);}
-  body.deck .portrait{width:min(200px,70vw);margin:0 auto;}   /* explicit width: children are all absolute, so it must not shrink-to-fit */
-  .portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;}
-  .portrait::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,12,10,0) 55%,rgba(7,12,10,.55));}
-  .portrait .frameglow{position:absolute;inset:0;box-shadow:inset 0 0 40px rgba(244,198,106,.25);border-radius:14px;z-index:2;}
+  .portrait{aspect-ratio:3/4;border-radius:14px;position:relative;overflow:hidden;background:linear-gradient(160deg,#12241d,#0a1410);border:1px solid rgba(244,198,106,.2);box-shadow:var(--shadow);}
+  body.deck .portrait{width:min(210px,70vw);margin:0 auto;}   /* explicit width: children are all absolute, so it must not shrink-to-fit */
+  .portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity .55s ease;}
+  .portrait img.on{opacity:1;}
+  .portrait::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,12,10,0) 55%,rgba(7,12,10,.55));pointer-events:none;}
+  .portrait .frameglow{position:absolute;inset:0;box-shadow:inset 0 0 40px rgba(244,198,106,.25);border-radius:14px;z-index:2;pointer-events:none;}
+  /* portrait carousel arrows */
+  .parrow{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:34px;height:34px;border-radius:50%;cursor:pointer;
+    border:1px solid rgba(244,198,106,.45);background:rgba(8,14,11,.55);color:var(--amber-glow);font-size:1.15rem;line-height:1;
+    display:flex;align-items:center;justify-content:center;transition:background .2s, border-color .2s;}
+  .parrow:hover{background:rgba(8,14,11,.85);border-color:var(--amber-glow);}
+  .pprev{left:8px;} .pnext{right:8px;}
+  .pcount{position:absolute;left:0;right:0;bottom:8px;z-index:4;text-align:center;font-family:var(--body);font-size:.72rem;
+    letter-spacing:.14em;color:rgba(244,217,138,.75);pointer-events:none;}
+  .portrait img{cursor:zoom-in;}
+
+  /* photo lightbox (click the portrait to enlarge) */
+  .lightbox{position:fixed;inset:0;z-index:130;display:none;align-items:center;justify-content:center;
+    background:rgba(4,8,6,.93);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);padding:5vh 4vw;}
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:min(92vw,640px);max-height:84vh;width:auto;height:auto;border-radius:12px;
+    border:1px solid rgba(244,198,106,.28);box-shadow:0 30px 80px rgba(0,0,0,.7);}
+  .lb-close{position:absolute;top:18px;right:20px;width:40px;height:40px;border-radius:50%;cursor:pointer;
+    border:1px solid rgba(244,198,106,.4);background:rgba(10,16,12,.7);color:var(--amber-glow);font-size:1.05rem;}
+  .lb-arrow{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;cursor:pointer;
+    border:1px solid rgba(244,198,106,.4);background:rgba(10,16,12,.6);color:var(--amber-glow);font-size:1.6rem;line-height:1;
+    display:flex;align-items:center;justify-content:center;transition:background .2s, border-color .2s;}
+  .lb-arrow:hover,.lb-close:hover{background:rgba(10,16,12,.95);border-color:var(--amber-glow);}
+  .lb-prev{left:max(12px,3vw);} .lb-next{right:max(12px,3vw);}
+  .lb-count{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-family:var(--body);font-size:.78rem;
+    letter-spacing:.16em;color:rgba(244,217,138,.8);pointer-events:none;}
+  @media(max-width:560px){.lb-arrow{width:40px;height:40px;font-size:1.3rem;} .lb-prev{left:8px;} .lb-next{right:8px;}}
   .about p{font-size:1.1rem;color:#d8d2c0;}
   .about h2{text-align:left;}
   body.deck .about h2,body.deck .about .kicker{text-align:center;}
@@ -414,6 +447,7 @@
 <body>
 <div class="backdrop" aria-hidden="true"></div>
 <div class="skylayer" id="skylayer" aria-hidden="true"></div>
+<img class="goddess" src="assets/moon-goddess.webp" alt="" aria-hidden="true" />
 
 <div class="leaves" id="leaves" aria-hidden="true">
   <img class="leaf lf" src="assets/canopy-far.webp" alt="" />
@@ -498,11 +532,18 @@
   </section>
 
   <!-- 2 · MEET BRANDEN -->
-<!-- ===== EDIT: Meet Branden. Photo is assets/branden.jpg; bio paragraphs are in this section. ===== -->
+<!-- ===== EDIT: Meet Branden. Portrait photos are assets/branden-1.webp through branden-4.webp; bio paragraphs are in this section. ===== -->
   <section class="page about" id="p-about" data-i="2">
     <div class="wrap about-grid">
-      <div class="portrait">
-        <img src="assets/branden.jpg" alt="Branden, tarot reader and spiritual counselor" loading="lazy" />
+      <!-- EDIT: portrait photos. Add or remove an <img> below and the arrows adjust automatically. -->
+      <div class="portrait" id="portraitCar">
+        <img class="on" src="assets/branden-1.webp" alt="Branden, tarot reader and spiritual counselor" />
+        <img src="assets/branden-2.webp" alt="Branden, tarot reader and spiritual counselor" loading="lazy" />
+        <img src="assets/branden-3.webp" alt="Branden, tarot reader and spiritual counselor" loading="lazy" />
+        <img src="assets/branden-4.webp" alt="Branden, tarot reader and spiritual counselor" loading="lazy" />
+        <button type="button" class="parrow pprev" aria-label="Previous photo">&lsaquo;</button>
+        <button type="button" class="parrow pnext" aria-label="Next photo">&rsaquo;</button>
+        <span class="pcount" id="pcount"></span>
         <span class="frameglow"></span>
       </div>
       <div>
@@ -631,6 +672,15 @@
   </section>
 
 </main>
+
+<!-- ===== Photo lightbox (click the portrait to enlarge) ===== -->
+<div class="lightbox" id="photoLb" aria-hidden="true">
+  <button class="lb-close" type="button" aria-label="Close">&#10005;</button>
+  <button class="lb-arrow lb-prev" type="button" aria-label="Previous photo">&lsaquo;</button>
+  <img id="lbImg" src="" alt="Branden, tarot reader and spiritual counselor" />
+  <button class="lb-arrow lb-next" type="button" aria-label="Next photo">&rsaquo;</button>
+  <span class="lb-count" id="lbCount"></span>
+</div>
 
 <!-- ===== In-site parchment modals (Book page) ===== -->
 <div class="modal-overlay" id="msgOverlay" aria-hidden="true">
@@ -769,6 +819,48 @@
     { id:'rIE_mepHCAw', title:'Millennial Actress Gets a Psychic Reading with Her Childhood Items' }
     // , { id:'ANOTHER_ID', title:'Another video title' }
   ];
+
+  // ---------- portrait carousel + click-to-enlarge lightbox (both loop endlessly) ----------
+  (function(){
+    var car=document.getElementById('portraitCar'); if(!car) return;
+    var pics=[].slice.call(car.querySelectorAll('img')); if(!pics.length) return;
+    var srcs=pics.map(function(im){ return im.getAttribute('src'); });
+    var idx=0, open=false;
+    var cnt=document.getElementById('pcount');
+    var lb=document.getElementById('photoLb'), lbImg=document.getElementById('lbImg'), lbCount=document.getElementById('lbCount');
+
+    function show(n){
+      idx=(n+pics.length)%pics.length;                     // wraps both directions
+      pics.forEach(function(im,k){ im.classList.toggle('on', k===idx); });
+      var label=(idx+1)+' / '+pics.length;
+      if(cnt) cnt.textContent=label;
+      if(open && lb){ lbImg.src=srcs[idx]; lbCount.textContent=label; }
+    }
+    car.querySelector('.pprev').addEventListener('click', function(e){ e.stopPropagation(); show(idx-1); });
+    car.querySelector('.pnext').addEventListener('click', function(e){ e.stopPropagation(); show(idx+1); });
+
+    if(lb){
+      function openLb(){
+        open=true; lbImg.src=srcs[idx]; lbCount.textContent=(idx+1)+' / '+pics.length;
+        lb.classList.add('open'); lb.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open');
+      }
+      function closeLb(){
+        open=false; lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); document.body.classList.remove('modal-open');
+      }
+      pics.forEach(function(im){ im.addEventListener('click', openLb); });          // tap the photo to blow it up
+      lb.querySelector('.lb-close').addEventListener('click', closeLb);
+      lb.querySelector('.lb-prev').addEventListener('click', function(e){ e.stopPropagation(); show(idx-1); });
+      lb.querySelector('.lb-next').addEventListener('click', function(e){ e.stopPropagation(); show(idx+1); });
+      lb.addEventListener('click', function(e){ if(e.target===lb) closeLb(); });     // click the backdrop to close
+      window.addEventListener('keydown', function(e){                                // keys drive the lightbox, not the deck
+        if(!open) return;
+        if(e.key==='Escape'){ closeLb(); e.stopImmediatePropagation(); }
+        else if(e.key==='ArrowLeft'){ show(idx-1); e.stopImmediatePropagation(); }
+        else if(e.key==='ArrowRight'){ show(idx+1); e.stopImmediatePropagation(); }
+      }, true);
+    }
+    show(0);
+  })();
 
   // ---------- mobile menu ----------
   var toggle=document.getElementById('toggle'), menu=document.getElementById('menu');
