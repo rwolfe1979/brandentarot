@@ -45,7 +45,7 @@
   @media(max-width:560px){.fox{opacity:.95;}}   /* fox stays on mobile (JS-controlled), just a touch softer on tiny screens */
 
   /* tarot cards tossed onto the table at the bottom of Readings */
-  .cards-toss{position:fixed;left:0;right:0;bottom:0;z-index:5;height:0;pointer-events:none;}
+  .cards-toss{position:fixed;left:0;right:0;bottom:0;z-index:3;height:0;pointer-events:none;}
   .tcard{position:absolute;left:50%;bottom:-13vh;height:34vh;transform-origin:50% 100%;
     filter:drop-shadow(0 12px 26px rgba(0,0,0,.6));will-change:transform;
     transition:transform .8s cubic-bezier(.16,.72,.2,1.04);}
@@ -65,7 +65,7 @@
   @media(prefers-reduced-motion:reduce){.tcard{transition:none;}}
 
   /* incense + amethyst with a ribbon of smoke on the Offerings page */
-  .incense-holder{position:fixed;left:50%;bottom:0;height:30vh;transform:translateX(-50%);z-index:5;pointer-events:none;opacity:0;transition:opacity .5s ease;
+  .incense-holder{position:fixed;left:50%;bottom:0;height:30vh;transform:translateX(-50%);z-index:3;pointer-events:none;opacity:0;transition:opacity .5s ease;
     filter:drop-shadow(0 0 20px rgba(180,120,255,.28)) drop-shadow(0 8px 14px rgba(0,0,0,.5));}
   .smoke-canvas{position:fixed;left:calc(50% + 2vh);bottom:28vh;width:30vh;height:58vh;transform:translateX(-50%);z-index:3;pointer-events:none;opacity:0;transition:opacity .6s ease;}
   body.offering .incense-holder, body.offering .smoke-canvas{opacity:1;}
@@ -386,6 +386,33 @@
   .soon{display:inline-block;font-family:var(--display);font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--amber-glow);
     border:1px solid rgba(244,198,106,.45);border-radius:20px;padding:3px 13px;margin:8px 0;background:rgba(244,198,106,.08);}
   .soon-card{opacity:.9;}
+  /* services grid + subheading on the Services & Offerings slide */
+  .svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:14px;}
+  .subhead{text-align:center;font-family:var(--display);color:var(--wisp);font-size:1.15rem;letter-spacing:.12em;text-transform:uppercase;margin:26px 0 2px;}
+  /* horizontal service carousels (desktop + mobile) */
+  .svc-car-wrap{position:relative;margin-top:10px;}
+  .svc-car{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:4px 2px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .svc-car::-webkit-scrollbar{display:none;}
+  .svc-car > *{scroll-snap-align:center;flex:0 0 58%;}
+  .svc-car::before, .svc-car::after{content:"";flex:0 0 21%;}   /* spacers so the first/last card can reach center */
+  @media(max-width:820px){ .svc-car > *{flex:0 0 82%;} .svc-car::before, .svc-car::after{flex:0 0 9%;} }
+  .svc-arrow{position:absolute;top:calc(50% - 3px);transform:translateY(-50%);z-index:6;width:36px;height:36px;border-radius:50%;cursor:pointer;
+    border:1px solid rgba(143,227,214,.4);background:rgba(8,14,11,.72);color:var(--wisp);font-size:1.3rem;line-height:1;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s,opacity .2s;}
+  .svc-arrow:hover{background:rgba(8,14,11,.95);border-color:var(--wisp);}
+  .svc-prev{left:-6px;} .svc-next{right:-6px;}
+  .svc-arrow.off{opacity:.25;pointer-events:none;}
+  @media(max-width:820px){.svc-prev{left:0;} .svc-next{right:0;}}
+  /* interactive service cards + detail popup */
+  .svc-more,.svc-link{cursor:pointer;}
+  .svc-cue{display:inline-block;margin-top:9px;font-family:var(--body);font-size:.82rem;color:var(--wisp);letter-spacing:.03em;}
+  .svc-detail{display:none;}
+  .svc-body{font-family:var(--serif);color:#5b4f38;font-size:1.05rem;line-height:1.55;}
+  .svc-body p{margin:0 0 12px;}
+  .svc-body ul{margin:0;padding-left:20px;}
+  .svc-body li{margin:0 0 9px;}
+  .svc-body b{color:#3a2f18;}
+  .svc-body .svc-src{font-size:.86rem;color:#7a6a4c;margin-top:16px;}
+  .svc-body .svc-src a{color:#8a5a12;text-decoration:underline;}
   .note{font-family:var(--serif);color:var(--mist);font-size:.95rem;font-style:italic;text-align:center;}
 
   /* ===== WATCH CAROUSEL ===== */
@@ -476,8 +503,8 @@
   <nav>
     <ul id="menu">
       <li><a data-page="2">About</a></li>
-      <li><a data-page="3">Readings</a></li>
-      <li><a data-page="4">Offerings</a></li>
+      <li><a data-page="3">Services</a></li>
+      <li><a data-page="4">Readings</a></li>
       <li><a data-page="5">Watch</a></li>
       <li><a data-page="7">Book</a></li>
     </ul>
@@ -542,25 +569,78 @@
       <div>
         <p class="kicker">The Storyteller's Hollow</p>
         <h2>Meet Branden</h2>
-        <p>Branden has been reading since he was six years old, when a deck of playing cards found its way into his hands and the meanings simply arrived, like a lightbulb over his head. A natural clairvoyant, clairaudient, and clairsentient, he grew up communing with trees and learning to feel the cards without ever turning them over.</p>
+        <p>Branden has been reading since he was five years old, when a deck of playing cards found its way into his hands and the meanings simply arrived, like a lightbulb over his head. Gifted with all seven clair senses, among them clairvoyance, clairaudience, and clairsentience, he grew up communing with trees and learning to feel the cards without ever turning them over.</p>
         <p>He is a blunt, honest, genuine reader. He will not let you hide or lie to yourself, and he'll leave you with comfort, clarity, and usually a laugh. His specialties are <em>yearly readings</em> that map your year month by month, and <em>decision-making readings</em> for when two or more paths lie before you.</p>
         <div class="creds">
           <div class="cred"><b>30+</b><span>Years reading</span></div>
-          <div class="cred"><b>3</b><span>Clair-gifts</span></div>
+          <div class="cred"><b>7</b><span>Clair-gifts</span></div>
           <div class="cred"><b>∞</b><span>Paths read</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 2 · READINGS & SESSIONS -->
-  <section class="page" id="p-readings" data-i="2">
+  <!-- 2 · SERVICES & OFFERINGS -->
+  <section class="page" id="p-offerings" data-i="2">
+    <div class="wrap">
+<!-- ===== EDIT: services + offerings. Each group is a horizontal carousel (.svc-car); cards are <div class="potion">. Add/remove <div class="soon">Coming Soon</div> to toggle a tag. ===== -->
+      <p class="kicker">Paths &amp; Potions</p>
+      <h2>Services &amp; Offerings</h2>
+      <p class="lead">The readings, workings, and hand-prepared items Branden offers.</p>
+
+      <p class="subhead">Readings</p>
+      <div class="svc-car-wrap">
+        <button class="svc-arrow svc-prev" type="button" aria-label="Previous">&lsaquo;</button>
+        <div class="svc-car">
+          <div class="potion svc-link" data-page="4"><h3>Tarot</h3><p>Classic card readings for guidance, clarity, and the questions that are loud in you right now.</p><span class="svc-cue">See session lengths →</span></div>
+          <div class="potion svc-more"><h3>Intuitive</h3><p>A reading led by intuition and the messages that come through, with or without the cards.</p><span class="svc-cue">Learn more →</span><div class="svc-detail" hidden><p>An intuitive reading is guidance from someone more attuned and practiced at listening to intuition than most. A good one gives you clearer answers more quickly, a neutral outside perspective meant only for your highest good, and a fresh way to hear something you may already sense deep down.</p><p>It suits a specific question, a season when you feel unmoored, or a moment when you feel stuck and need a new angle.</p><p class="svc-src">More on intuitive readings: <a href="https://medium.com/holisticism/intuitives-wtf-is-a-psychic-medium-or-intuitive-guide-and-when-do-i-talk-to-one-d84737e8c440" target="_blank" rel="noopener">Holisticism</a></p></div></div>
+          <div class="potion svc-more"><h3>Elder Futhark Runes</h3><p>Casting the old Norse runes to read the currents around a question or a path.</p><span class="svc-cue">Learn more →</span><div class="svc-detail" hidden><p>The Elder Futhark is the oldest runic alphabet, twenty-four symbols used by Germanic and Norse peoples from roughly 150 to 700 CE. Each rune carries a name, a sound, and a web of meanings drawn from Norse myth and the natural world, touching on themes like prosperity, protection, and transformation.</p><p>In a reading, the runes are cast much like tarot, and their symbols and the way they fall are read together for insight around your question.</p><p class="svc-src">More on the runes: <a href="https://www.collegeofpsychicstudies.co.uk/enlighten/runes-101-meaning-history-how-to-cast-runes-for-divination/" target="_blank" rel="noopener">The College of Psychic Studies</a></p></div></div>
+          <div class="potion svc-more"><h3>Numerology</h3><p>Those recurring patterns like 555 or 999, and the energy around particular dates or ages, read for what they are telling you.</p><span class="svc-cue">Learn more →</span><div class="svc-detail" hidden><p>Numerology is the study of the meaning people have long attached to numbers. Working from things like your name, your birth date, or the numbers that keep showing up for you, it reads those patterns for what they might point to about character, timing, and the season you are in.</p><p>Cultures across history have given numbers symbolic weight, and this is a way of listening to that language.</p><p class="svc-src">More on numerology: <a href="https://www.britannica.com/topic/number-symbolism" target="_blank" rel="noopener">Britannica</a></p></div></div>
+          <div class="potion svc-more"><h3>Dream Interpretations</h3><p>Making sense of the images, symbols, and messages your dreams are carrying.</p><span class="svc-cue">Learn more →</span><div class="svc-detail" hidden><p>Dream interpretation reads the images, symbols, and feelings in a dream for the meaning underneath. Symbols are personal as much as universal, so the same image can point to different things depending on your life and what is going on in it.</p><p>Drawing on both the psychological tradition of thinkers like Jung and Freud and older spiritual practices, a reading helps you unpack what a dream may be nudging you toward.</p><p class="svc-src">More on dream symbols: <a href="https://www.dreamdictionary.org/" target="_blank" rel="noopener">Dream Dictionary</a></p></div></div>
+          <div class="potion svc-more"><h3>Crossroads Readings</h3><p>For the moments when several roads stretch before you and you want a clearer picture to choose wisely.</p><span class="svc-cue">Learn more →</span><div class="svc-detail" hidden><p>A crossroads reading is for the moments when two or more roads stretch out in front of you and you are not sure which to take. Branden reads the paths on the table and what each one holds, so you can see the choice more clearly and move with confidence instead of second-guessing.</p><p>It fits a big decision, a fork you keep circling, or any time you want a steadier read before you commit.</p></div></div>
+          <div class="potion svc-more"><h3>Business &amp; Career</h3><p>An intuitive reading pointed at your work life, rather than your whole life.</p><span class="svc-cue">What it covers →</span><div class="svc-detail" hidden><p>An intuitive, guided reading aimed at your work life rather than your whole life. It typically covers:</p><ul><li><b>Timing questions.</b> Should I take this job, is now the time to quit, when should I launch?</li><li><b>Career direction.</b> Feeling stuck, or sensing a shift coming but not sure what.</li><li><b>Business energy reads.</b> Is this venture, partnership, or investment actually going to work?</li><li><b>Client and team dynamics.</b> Tension or misalignment with a partner, boss, or employee.</li><li><b>Decision support.</b> Two paths on the table, and a read on which one holds what you are after.</li></ul></div></div>
+        </div>
+        <button class="svc-arrow svc-next" type="button" aria-label="Next">&rsaquo;</button>
+      </div>
+
+      <p class="subhead">Energy &amp; Spirit Work</p>
+      <div class="svc-car-wrap">
+        <button class="svc-arrow svc-prev" type="button" aria-label="Previous">&lsaquo;</button>
+        <div class="svc-car">
+          <div class="potion svc-more"><h3>Energy Work &amp; Rebalancing</h3><p>As a Reiki practitioner, Branden helps rebalance the parts of you that are out of sync, and shares ways to keep your alignment.</p><span class="svc-cue">Learn more →</span><div class="svc-detail" hidden><p>Reiki is a Japanese energy practice whose name means "universal life energy." The practitioner rests their hands lightly on or just above you to help guide that energy and support your own sense of balance and calm.</p><p>People often turn to it to feel grounded, ease stress, and reconnect the parts of themselves that feel out of sync. Branden also shares small practices to help you hold that alignment between sessions.</p><p class="svc-src">More on Reiki: <a href="https://www.nccih.nih.gov/health/reiki" target="_blank" rel="noopener">NCCIH (National Institutes of Health)</a></p></div></div>
+          <div class="potion svc-more"><h3>Spirit Realm Communication</h3><p>Something off about a house or a business? A bridge to speak directly with the energy present.</p><span class="svc-cue">Learn more →</span><div class="svc-detail" hidden><p>Spirit communication, often called mediumship, is the practice of acting as a bridge between the living and the energy or spirits present in a place or moment.</p><p>When something feels off about a house or a business, Branden tunes in to what is there and helps translate it, so you can understand the energy you are sensing and what it may be asking for.</p><p class="svc-src">More on mediumship: <a href="https://www.britannica.com/topic/medium-occultism" target="_blank" rel="noopener">Britannica</a></p></div></div>
+          <div class="potion svc-more"><h3>Spirit, Witch &amp; Tarot Coaching</h3><p>For those wanting to go deeper on their spiritual path.</p><span class="svc-cue">Learn more →</span><div class="svc-detail" hidden><p>This reading is multi-faceted, made for those who want a richer, deeper connection with their spiritual path and want to dive further.</p><p>Not sure how to approach a spell? Want to look at the possible outcomes before you cast? Seeking deeper translations of the cards? Branden meets you where you are and helps you go further.</p></div></div>
+        </div>
+        <button class="svc-arrow svc-next" type="button" aria-label="Next">&rsaquo;</button>
+      </div>
+
+      <p class="subhead">Potions, Spells &amp; Incense</p>
+      <div class="svc-car-wrap">
+        <button class="svc-arrow svc-prev" type="button" aria-label="Previous">&lsaquo;</button>
+        <div class="svc-car">
+          <div class="potion soon-card svc-more"><h3>Prosperity Incense or Candle</h3><div class="soon">Coming Soon</div><p>To draw prosperity toward your life, your business, or a loved one.</p><span class="svc-cue">Learn more →</span><div class="svc-detail" hidden><p>Each one is prepared by hand and worked with intention to draw prosperity toward you, whether that is for your life, your business, or someone you love.</p><p>You might keep a candle burning while you focus on a goal, or let the incense set the tone of a space. These are made to order, so they are shaped around what you are calling in.</p></div></div>
+          <div class="potion soon-card"><h3>New Home Blessing</h3><div class="soon">Coming Soon</div><p>A blend to help a new home shine and breathe. A wonderful housewarming gift.</p></div>
+          <div class="potion"><h3>Customized Work</h3><p>For those who need a little more, whether that is cleansing, healing, or a boost out of a rut. Begins with a consultation to shape exactly what you need.</p></div>
+        </div>
+        <button class="svc-arrow svc-next" type="button" aria-label="Next">&rsaquo;</button>
+      </div>
+      <p class="note" style="margin-top:22px">Each item is prepared by hand. <a class="pick" data-page="7" style="color:var(--wisp)">Contact Branden to order →</a></p>
+    </div>
+  </section>
+
+  <!-- 3 · READINGS & SESSIONS -->
+  <section class="page" id="p-readings" data-i="3">
     <div class="wrap">
 <!-- ===== EDIT: readings. Each reading is a <div class="card"> below (name, symbol, description). ===== -->
       <p class="kicker">The Reading Grove</p>
       <h2>Readings &amp; Sessions</h2>
       <p class="lead">A time set aside just for you, to answer questions, give guidance, and point you toward the path that fits.</p>
       <div class="cards">
+        <div class="card">
+          <div class="sym">✧</div><h3>15 Minutes</h3>
+          <p>The quick draw. One pressing question, a fast and focused answer.</p>
+          <a class="pick" href="https://thegreenmanpsychics.com/profile/brandenlyesmith/" target="_blank" rel="noopener">Book this →</a>
+        </div>
         <div class="card">
           <div class="sym">🌙</div><h3>30 Minutes</h3>
           <p>A quick answer to a single question, or an update for returning clients. Great for a fast, focused pull.</p>
@@ -583,22 +663,6 @@
           <a class="pick" href="https://thegreenmanpsychics.com/profile/brandenlyesmith/" target="_blank" rel="noopener">Book this →</a>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- 3 · OFFERINGS -->
-  <section class="page" id="p-offerings" data-i="3">
-    <div class="wrap">
-<!-- ===== EDIT: offerings. To show or hide a Coming Soon tag on a card, add or remove: <div class="soon">Coming Soon</div> ===== -->
-      <p class="kicker">Potions, Spells &amp; Incense</p>
-      <h2>Offerings</h2>
-      <p class="lead">Individually prepared candles and incense, formulated through a psychic diagnosis for exactly what you need.</p>
-      <div class="potion-grid">
-        <div class="potion soon-card"><h3>Prosperity Incense or Candle</h3><div class="soon">Coming Soon</div><p>To draw prosperity toward your life, your business, or a loved one.</p></div>
-        <div class="potion soon-card"><h3>New Home Blessing</h3><div class="soon">Coming Soon</div><p>A blend to help a new home shine and breathe. A wonderful housewarming gift.</p></div>
-        <div class="potion"><h3>Customized Work</h3><p>For those who need a little more, whether that is cleansing, healing, or a boost out of a rut. Begins with a consultation to shape exactly what you need.</p></div>
-      </div>
-      <p class="note" style="margin-top:22px">Each item is prepared by hand. <a class="pick" data-page="7" style="color:var(--wisp)">Contact Branden to order →</a></p>
     </div>
   </section>
 
@@ -675,6 +739,18 @@
   <span class="lb-count" id="lbCount"></span>
 </div>
 
+<!-- ===== Service detail popup ===== -->
+<div class="modal-overlay" id="svcLb" aria-hidden="true">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="svcLbTitle">
+    <button class="modal-x" type="button" data-svcclose aria-label="Close">&#10005;</button>
+    <div class="modal-scroll">
+      <p class="modal-kicker">Service</p>
+      <h3 class="modal-title" id="svcLbTitle"></h3>
+      <div class="svc-body" id="svcLbBody"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ===== In-site parchment modals (Book page) ===== -->
 <div class="modal-overlay" id="msgOverlay" aria-hidden="true">
   <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="msgHeading">
@@ -743,6 +819,7 @@
             <span>Length of reading</span>
             <select id="readingLen">
               <option value="" disabled selected>Choose a length&hellip;</option>
+              <option>15 Minutes</option>
               <option>30 Minutes</option>
               <option>45 Minutes</option>
               <option>60 Minutes</option>
@@ -853,6 +930,47 @@
       }, true);
     }
     show(0);
+  })();
+
+  // ---------- horizontal service carousels (desktop + mobile) ----------
+  [].slice.call(document.querySelectorAll('.svc-car-wrap')).forEach(function(wrap){
+    var car=wrap.querySelector('.svc-car'), prev=wrap.querySelector('.svc-prev'), next=wrap.querySelector('.svc-next');
+    if(!car||!prev||!next) return;
+    function step(){ var f=car.firstElementChild; return f?f.offsetWidth+14:car.clientWidth*0.8; }
+    function upd(){
+      var noScroll=car.scrollWidth<=car.clientWidth+1;
+      prev.style.display=next.style.display=noScroll?'none':'flex';
+      if(noScroll) return;
+      prev.classList.toggle('off', car.scrollLeft<=1);
+      next.classList.toggle('off', car.scrollLeft+car.clientWidth>=car.scrollWidth-1);
+    }
+    prev.addEventListener('click', function(){ car.scrollBy({left:-step(), behavior:'smooth'}); });
+    next.addEventListener('click', function(){ car.scrollBy({left:step(), behavior:'smooth'}); });
+    car.addEventListener('scroll', upd, {passive:true});
+    addEventListener('resize', upd);
+    upd();
+  });
+
+  // ---------- service detail popup (click a card to expand) ----------
+  (function(){
+    var lb=document.getElementById('svcLb'); if(!lb) return;
+    var title=document.getElementById('svcLbTitle'), body=document.getElementById('svcLbBody');
+    function openLb(card){
+      var h=card.querySelector('h3'), d=card.querySelector('.svc-detail');
+      title.textContent=h?h.textContent:''; body.innerHTML=d?d.innerHTML:'';
+      lb.classList.add('open'); lb.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open');
+    }
+    function closeLb(){ lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); document.body.classList.remove('modal-open'); }
+    [].slice.call(document.querySelectorAll('.svc-more')).forEach(function(card){
+      card.addEventListener('click', function(){ openLb(card); });
+    });
+    lb.addEventListener('click', function(e){ if(e.target===lb) closeLb(); });
+    var x=lb.querySelector('[data-svcclose]'); if(x) x.addEventListener('click', closeLb);
+    window.addEventListener('keydown', function(e){          // keys drive the popup, not the deck, while it's open
+      if(!lb.classList.contains('open')) return;
+      if(e.key==='Escape'){ closeLb(); e.stopImmediatePropagation(); }
+      else if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','PageUp','PageDown',' '].indexOf(e.key)>-1) e.stopImmediatePropagation();
+    }, true);
   })();
 
   // ---------- mobile menu ----------
@@ -1067,9 +1185,9 @@
       if(pages[n]) pages[n].scrollTop=0;            // start each page from the top (matters on mobile where pages scroll)
       body.classList.toggle('at-sky', n===0);      // skylayer (sky-open) handled by the descent anim + init
       markNav(n);
-      cardsToss.classList.toggle('dealt', n===3);  // deal the tarot cards on the Readings page only
-      body.classList.toggle('offering', n===4);    // light the incense on the Offerings page
-      smokeSet(n===4);
+      cardsToss.classList.toggle('dealt', n===4);  // deal the tarot cards on the Readings page only
+      body.classList.toggle('offering', n===3);    // light the incense on the Services & Offerings page
+      smokeSet(n===3);
       body.classList.toggle('at-testi', n===6);    // lantern lowers on What Clients Say
       body.classList.toggle('at-book', n===7);     // letter tossed in on Book
       if(n===5) ravenShow(); else ravenHide();     // raven perches on Watch
